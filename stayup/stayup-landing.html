@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전북소방드론팀 스테이업 (StayUp) - 도민의 안전을 지키는 깨어있는 눈</title>
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="전북소방드론팀 스테이업 (StayUp)">
+    <meta property="og:description" content="도민의 안전을 지키는 깨어있는 눈, 전북소방드론팀 스테이업입니다.">
+    <meta property="og:image" content="/images/stayup-symbol.jpg">
+    <meta property="og:url" content="https://stayup-ai.com/stayup">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" href="/images/stayup-symbol.jpg" type="image/jpeg">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/stayup.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="/images/jb119.png" alt="전북소방본부" class="logo" onerror="this.style.display='none'">
+                    <img src="/images/stayup-symbol.jpg" alt="Stay-Up" class="logo" onerror="this.style.display='none'">
+                    <span class="stayup-logo">Stay-Up</span>
+                </div>
+                <nav>
+                    <ul class="nav-menu">
+                        <li><a href="#activities">최근 활약상</a></li>
+                        <li><a href="#stats">팀 현황</a></li>
+                        <li><a href="#missions">주요 임무</a></li>
+                        <li><a href="#members">팀원 소개</a></li>
+                    </ul>
+                    <div class="mobile-menu-btn">
+                        <i class="fas fa-bars"></i>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section with Slideshow -->
+    <section class="hero">
+        <!-- Background Slideshow -->
+        <div class="hero-slideshow">
+            <div class="hero-slide active" style="background-image: url('/images/slide1.jpg');"></div>
+            <div class="hero-slide" style="background-image: url('/images/slide2.jpg');"></div>
+            <div class="hero-slide" style="background-image: url('/images/slide3.jpg');"></div>
+            <div class="hero-slide" style="background-image: url('/images/slide4.jpg');"></div>
+        </div>
+
+        <div class="particles" id="particles"></div>
+        <div class="floating-element drone1">🚁</div>
+        <div class="floating-element drone2">🔥</div>
+        <div class="floating-element fire1">🚨</div>
+
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">가장 높은 곳에서, 가장 먼저!</h1>
+                <p class="hero-subtitle">도민의 안전을 지키는 '깨어있는 눈'</p>
+                <p class="hero-description">
+                    스테이업은 화재, 구조, 구급 등 재난 현장 곳곳에서 임무를 수행하며 골든타임을 확보합니다.<br>
+                    "항상 깨어 있는 눈으로 국민의 생명과 재산을 지키겠다"는 사명으로 비행합니다.
+                </p>
+                <a href="#missions" class="cta-button">
+                    <i class="fas fa-rocket"></i>
+                    주요 임무 보기
+                </a>
+            </div>
+        </div>
+
+        <!-- Slideshow Controls -->
+        <div class="slideshow-controls">
+            <span class="slide-dot active" data-slide="0"></span>
+            <span class="slide-dot" data-slide="1"></span>
+            <span class="slide-dot" data-slide="2"></span>
+            <span class="slide-dot" data-slide="3"></span>
+        </div>
+    </section>
+
+    <!-- Recent Activities Section -->
+    <section class="section recent-activities" id="activities">
+        <div class="container">
+            <h2 class="section-title fade-in">최근 활약상</h2>
+            <p class="section-subtitle fade-in">스테이업 드론팀의 생생한 현장 활동</p>
+
+            <div class="activities-grid">
+
+
+                <div class="activity-card fade-in">
+                    <div class="activity-image">
+                        <img src="../images/buan251001.jpg" alt="실종자 수색"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="image-placeholder" style="display: none;">
+                            <i class="fas fa-search"></i>
+                            <span>수색 작전</span>
+                        </div>
+                        <div class="activity-badge">
+                            <i class="fas fa-user-shield"></i>
+                            <span>인명 구조</span>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <h3 class="activity-title">부안군 산악 실종자 수색</h3>
+                        <p class="activity-date">2025년 9월27일 ~ 10월1일</p>
+                        <p class="activity-summary">
+                            부안군 내변산일대에서 실종된 구조대상자 수색 실시
+                        </p>
+                        <div class="activity-tags">
+                            <span class="activity-tag">실종자 수색</span>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-card fade-in">
+                    <div class="activity-image">
+                        <img src="../images/jinan0825.jpg" alt="드론 훈련"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="image-placeholder" style="display: none;">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>훈련</span>
+                        </div>
+                        <div class="activity-badge">
+                            <i class="fas fa-trophy"></i>
+                            <span>역량 강화</span>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <h3 class="activity-title">전북소방 드론 인력풀 정기 훈련(8월)</h3>
+                        <p class="activity-date">2025년 8월 25일</p>
+                        <p class="activity-summary">
+                            국립진안고원산림치유원에서 산악수색 훈련을 실시하였다.
+                        </p>
+                        <div class="activity-tags">
+                            <span class="activity-tag">팀 역량</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section stats" id="stats">
+        <div class="container">
+            <h2 class="section-title fade-in">팀 현황</h2>
+            <p class="section-subtitle fade-in">전북소방드론팀 스테이업의 실시간 현황</p>
+
+            <div class="stats-grid">
+                <div class="stat-card fade-in">
+                    <span class="stat-icon">👥</span>
+                    <span class="stat-number">26명</span>
+                    <span class="stat-label">정예 대원<br>(2025년 현재)</span>
+                </div>
+
+                <div class="stat-card fade-in">
+                    <span class="stat-icon">🚁</span>
+                    <span class="stat-number">30대 이상</span>
+                    <span class="stat-label">운용 드론(개별)</span>
+                </div>
+
+                <div class="stat-card fade-in">
+                    <span class="stat-icon">🔥</span>
+                    <span class="stat-number">30+</span>
+                    <span class="stat-label">출동 실적</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="section missions" id="missions">
+        <div class="container">
+            <h2 class="section-title fade-in">주요 임무</h2>
+            <p class="section-subtitle fade-in">첨단 드론 기술로 도민의 생명과 재산을 보호합니다</p>
+
+            <div class="mission-grid">
+                <div class="mission-card fade-in">
+                    <div class="mission-icon">🔥</div>
+                    <h3>화재 현장 지휘 및 수색</h3>
+                    <p>화재 현장의 전체적인 상황을 실시간으로 파악하고, 효율적인 진압 작전 수립을 위한 정보를 제공합니다.</p>
+                </div>
+
+                <div class="mission-card fade-in">
+                    <div class="mission-icon">🔍</div>
+                    <h3>실종자 수색 및 인명 구조</h3>
+                    <p>열화상 카메라와 고해상도 카메라를 활용하여 실종자를 신속하게 발견하고 구조 작업을 지원합니다.</p>
+                </div>
+
+                <div class="mission-card fade-in">
+                    <div class="mission-icon">📡</div>
+                    <h3>재난 현장 맵핑 및 촬영</h3>
+                    <p>재난 현장의 정확한 지형 정보와 피해 현황을 3D 맵핑과 항공 촬영으로 제공합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Members Section -->
+    <section class="section team-members" id="members">
+        <div class="container">
+            <h2 class="section-title fade-in">팀원 소개</h2>
+            <p class="section-subtitle fade-in">재난 현장을 지키는 스테이업 대원들</p>
+
+            <div class="members-grid">
+                <div class="member-card fade-in" onclick="openMemberModal('sjh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-sjh.jpg" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">신준호</h3>
+                    <p class="member-position">회장</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kmy')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kmy.jpg" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김무영</h3>
+                    <p class="member-position">부회장</p>
+                    <p class="member-info">완주소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('jys')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-jys.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">조용석</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('bgh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-bgh.jpg" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">방극환</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">군산소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kjh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kjh.jpg" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김재현</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('hsp')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-hsp.webp" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">하승표</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">무주소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('ydg')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-ydg.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">양대건</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">장수소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('ldy')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-ldy.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">이동윤</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">익산소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kmg')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kmg.jpg" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김민규</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">완산소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kgw')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kgw.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">강계원</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('gyj')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-gyj.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">공영진</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kgs')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kgs.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김광수</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kih')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kih.png" alt="팎원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김익헌</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">군산소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('kch')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-kch.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">김찬희</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">완주소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('pyh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-pyh.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">박요한</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">임실소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('pch')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-pch.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">박치훈</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">김제소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('bsh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-bsh.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">방성호</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('bjm')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-bjm.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">방정민</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('ssg')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-ssg.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">소순기</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">김제소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('ssy')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-ssy.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">송수용</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('scs')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-scs.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">신창수</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('yps')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-yps.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">유평수</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">덕진소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('yjs')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-yjs.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">윤지성</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">119특수대응단<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('lyc')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-lyc.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">이용철</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">완산소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('ciy')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-ciy.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">최인율</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">남원소방서<br>Stay-Up</p>
+                </div>
+
+                <div class="member-card fade-in" onclick="openMemberModal('cjh')">
+                    <div class="member-avatar">
+                        <img src="../images/pic-cjh.png" alt="팀원" onerror="this.style.display='none'">
+                    </div>
+                    <h3 class="member-name">최재호</h3>
+                    <p class="member-position">대원</p>
+                    <p class="member-info">완산소방서<br>Stay-Up</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Member Modal -->
+    <div class="member-modal" id="memberModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeMemberModal()">
+                <i class="fas fa-times"></i>
+            </div>
+
+            <div class="modal-header">
+                <div class="modal-member-avatar" id="modalMemberAvatar">
+                    <img id="modalMemberImage" src="" alt="">
+                </div>
+                <h2 class="modal-member-name" id="modalMemberName"></h2>
+                <p class="modal-member-position" id="modalMemberPosition"></p>
+                <p class="modal-member-team" id="modalMemberTeam"></p>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-user-circle"></i>
+                        기본 정보
+                    </h3>
+                    <div class="modal-info-grid">
+                        <div class="modal-info-item">
+                            <div class="modal-info-label">소속</div>
+                            <div class="modal-info-value" id="modalDepartment"></div>
+                        </div>
+                        <div class="modal-info-item">
+                            <div class="modal-info-label">자격</div>
+                            <div class="modal-info-value" id="modalCertification"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-star"></i>
+                        주요 활동
+                    </h3>
+                    <div class="modal-section-content" id="modalActivities"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vision Section -->
+    <section class="section vision">
+        <div class="container">
+            <h2 class="section-title" style="color: white;">팀 비전</h2>
+            <div class="vision-content">
+                <p class="vision-quote">"첨단 기술과 뜨거운 사명감으로<br>더 안전한 전북을 만들겠습니다."</p>
+                <p class="vision-description">
+                    특수 재난 대응 역량 강화를 위해 창설된 우리 팀은 끊임없는 훈련과 기술 개발을 통해 전북 도민의 안전한 일상을 지켜나가겠습니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>전북소방본부</h4>
+                    <p>주소: 전라북도 전주시 완산구 서신로 70</p>
+                    <p>전화: 063-280-2114</p>
+                    <p>팩스: 063-280-2789</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>스테이업 드론팀</h4>
+                    <p>창설: 2023년 9월</p>
+                    <p>구성: 26명의 정예 대원</p>
+                    <p>임무: 특수 재난 대응</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>관련 사이트</h4>
+                    <p><a href="/firehawks/firehawks-landing.html">파이어호크스</a></p>
+                    <p><a href="https://www.nfa.go.kr">소방청</a></p>
+                    <p><a href="https://www.sobang.kr">전북소방본부</a></p>
+                    <p><a href="https://www.jeonbuk.go.kr">전라북도청</a></p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>소셜 미디어</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2023 전북소방드론팀 스테이업(StayUp). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/stayup.js"></script>
+</body>
+
+</html>
