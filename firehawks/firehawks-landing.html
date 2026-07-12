@@ -132,11 +132,14 @@
 
         <section class="schedule-section" id="schedule" aria-labelledby="schedule-title">
             <div class="shell schedule-card">
-                <div>
+                <div class="schedule-heading">
                     <p class="eyebrow">Next match</p>
                     <h2 id="schedule-title">다음 출전 일정</h2>
                 </div>
-                <p>공식 일정이 확정되는 대로 이 페이지에서 안내하겠습니다.</p>
+                <div id="firehawks-schedule-content" class="schedule-content" aria-live="polite" aria-atomic="true" aria-busy="true">
+                    <p class="schedule-load-status" role="status">출전 일정을 불러오는 중입니다.</p>
+                </div>
+                <noscript><p class="schedule-load-status">출전 일정을 보려면 브라우저에서 JavaScript를 활성화해 주세요.</p></noscript>
             </div>
         </section>
     </main>

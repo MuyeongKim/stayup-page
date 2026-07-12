@@ -10,6 +10,10 @@ export const contentFiles = [
   { path: 'data/firehawks-activities.json', team: 'firehawks' }
 ];
 
+export const scheduleFiles = [
+  { path: 'data/firehawks-schedules.json', team: 'firehawks' }
+];
+
 const datePattern = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
 
 function assert(condition, message) {
@@ -117,6 +121,67 @@ export async function readAndValidateContent(fileConfig) {
   return { absolutePath, content };
 }
 
+export async function readAndValidateSchedule(fileConfig) {
+  const absolutePath = path.join(rootDir, fileConfig.path);
+  const raw = await readFile(absolutePath, 'utf8');
+  const content = JSON.parse(raw);
+
+  assert(content && typeof content === 'object', `${fileConfig.path} must contain an object.`);
+  assert(content.team === fileConfig.team, `${fileConfig.path} team must be ${fileConfig.team}.`);
+  assert(Array.isArray(content.schedules), `${fileConfig.path} schedules must be an array.`);
+
+  const ids = new Set();
+  content.schedules.forEach((schedule, index) => {
+    const label = `${fileConfig.path} schedules[${index}]`;
+    assert(schedule && typeof schedule === 'object', `${label} must be an object.`);
+    assert(
+      typeof schedule.id === 'string' && /^[a-z0-9][a-z0-9-]{0,79}$/.test(schedule.id),
+      `${label}.id must use lowercase letters, numbers, and hyphens.`
+    );
+    assert(!ids.has(schedule.id), `${label}.id must be unique.`);
+    ids.add(schedule.id);
+
+    validateDate(schedule.date, `${label}.date`);
+    validateDate(schedule.endDate, `${label}.endDate`, false);
+    if (schedule.endDate) {
+      assert(
+        dateBoundary(schedule.endDate, true) >= dateBoundary(schedule.date, false),
+        `${label}.endDate cannot be before date.`
+      );
+    }
+
+    assert(typeof schedule.title === 'string' && schedule.title.trim(), `${label}.title is required.`);
+    assert(schedule.title.length <= 140, `${label}.title is too long.`);
+    assert(typeof schedule.location === 'string' && schedule.location.trim(), `${label}.location is required.`);
+    assert(schedule.location.length <= 120, `${label}.location is too long.`);
+    assert(typeof schedule.published === 'boolean', `${label}.published must be true or false.`);
+
+    const optionalStringFields = [
+      ['displayDate', 40],
+      ['division', 80],
+      ['description', 600]
+    ];
+    optionalStringFields.forEach(([field, maxLength]) => {
+      if (schedule[field] === undefined) return;
+      assert(
+        typeof schedule[field] === 'string'
+          && schedule[field].trim()
+          && schedule[field].length <= maxLength,
+        `${label}.${field} must be a non-empty string up to ${maxLength} characters.`
+      );
+    });
+
+    if (schedule.order !== undefined) {
+      assert(
+        Number.isInteger(schedule.order) && schedule.order >= 0 && schedule.order <= 9999,
+        `${label}.order must be an integer from 0 to 9999.`
+      );
+    }
+  });
+
+  return { absolutePath, content };
+}
+
 export async function validateReferencedImages(content) {
   const imagesRoot = await realpath(path.join(rootDir, 'images'));
   await Promise.all(content.activities.map(async (activity, index) => {
@@ -146,6 +211,9 @@ async function main() {
   for (const fileConfig of contentFiles) {
     const { content } = await readAndValidateContent(fileConfig);
     await validateReferencedImages(content);
+  }
+  for (const fileConfig of scheduleFiles) {
+    await readAndValidateSchedule(fileConfig);
   }
 }
 

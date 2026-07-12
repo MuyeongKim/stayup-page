@@ -66,6 +66,7 @@ async function main() {
     'admin/index.html',
     'data/stayup-activities.json',
     'data/firehawks-activities.json',
+    'data/firehawks-schedules.json',
     'robots.txt',
     'sitemap.xml'
   ];
@@ -81,6 +82,15 @@ async function main() {
       const imagePath = path.join(distDir, activity.image.replace(/^\//, ''));
       assert(await exists(imagePath), `${dataFile} references missing built image: ${activity.image}`);
     }
+  }
+
+  const scheduleContent = JSON.parse(
+    await readFile(path.join(distDir, 'data', 'firehawks-schedules.json'), 'utf8')
+  );
+  assert(scheduleContent.team === 'firehawks', 'firehawks-schedules.json team must be firehawks.');
+  assert(Array.isArray(scheduleContent.schedules), 'firehawks-schedules.json schedules must be an array.');
+  for (const schedule of scheduleContent.schedules) {
+    assert(schedule.published === true, 'firehawks-schedules.json contains an unpublished schedule.');
   }
 
   assert(!await exists(path.join(distDir, 'images', 'activity-uploads')), 'Raw activity uploads must not be published.');

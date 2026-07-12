@@ -11,6 +11,7 @@ const DATE_PATTERN = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?$/;
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,79}$/;
 const IMAGE_PATTERN = /^\/images\/[^?#]+\.(?:jpe?g|png|webp)$/i;
 const BADGE_TONES = new Set(['default', 'muted']);
+const SCHEDULE_PATH = 'data/firehawks-schedules.json';
 
 const TEAMS = Object.freeze({
   stayup: {
@@ -31,9 +32,12 @@ const state = {
     stayup: null,
     firehawks: null,
   },
+  scheduleManifest: null,
   selectedTeam: 'stayup',
   editingActivity: null,
   editorInvoker: null,
+  editingSchedule: null,
+  scheduleEditorInvoker: null,
   processedImage: null,
   previewObjectUrl: null,
   imageProcessVersion: 0,
@@ -57,6 +61,10 @@ const elements = {
   selectedTeamTitle: document.querySelector('#selected-team-title'),
   activitySummary: document.querySelector('#activity-summary'),
   activityList: document.querySelector('#activity-list'),
+  scheduleManager: document.querySelector('#schedule-manager'),
+  scheduleSummary: document.querySelector('#schedule-summary'),
+  scheduleList: document.querySelector('#schedule-list'),
+  addScheduleButton: document.querySelector('#add-schedule-button'),
   editorDialog: document.querySelector('#editor-dialog'),
   editorStatus: document.querySelector('#editor-status'),
   activityForm: document.querySelector('#activity-form'),
@@ -83,6 +91,23 @@ const elements = {
   imagePreview: document.querySelector('#image-preview'),
   imagePreviewDetails: document.querySelector('#image-preview-details'),
   imageHelp: document.querySelector('#image-help'),
+  scheduleEditorDialog: document.querySelector('#schedule-editor-dialog'),
+  scheduleEditorStatus: document.querySelector('#schedule-editor-status'),
+  scheduleForm: document.querySelector('#schedule-form'),
+  scheduleEditorFields: document.querySelector('#schedule-editor-fields'),
+  scheduleEditorTitle: document.querySelector('#schedule-editor-title'),
+  closeScheduleEditorButton: document.querySelector('#close-schedule-editor-button'),
+  cancelScheduleEditorButton: document.querySelector('#cancel-schedule-editor-button'),
+  saveScheduleButton: document.querySelector('#save-schedule-button'),
+  scheduleId: document.querySelector('#schedule-id'),
+  scheduleDate: document.querySelector('#schedule-date'),
+  scheduleEndDate: document.querySelector('#schedule-end-date'),
+  scheduleDisplayDate: document.querySelector('#schedule-display-date'),
+  scheduleTitle: document.querySelector('#schedule-title'),
+  scheduleLocation: document.querySelector('#schedule-location'),
+  scheduleDivision: document.querySelector('#schedule-division'),
+  scheduleDescription: document.querySelector('#schedule-description'),
+  schedulePublished: document.querySelector('#schedule-published'),
 };
 
 class GitHubApiError extends Error {
@@ -112,22 +137,35 @@ function setStatus(message, tone = 'info') {
   elements.statusMessage.textContent = message;
   elements.statusMessage.dataset.tone = tone;
   elements.statusMessage.setAttribute('role', tone === 'error' ? 'alert' : 'status');
-  if (elements.editorDialog.open) {
-    elements.editorStatus.hidden = false;
-    elements.editorStatus.textContent = message;
-    elements.editorStatus.dataset.tone = tone;
-    elements.editorStatus.setAttribute('role', tone === 'error' ? 'alert' : 'status');
+  const openDialogStatus = elements.editorDialog.open
+    ? elements.editorStatus
+    : elements.scheduleEditorDialog.open
+      ? elements.scheduleEditorStatus
+      : null;
+  if (openDialogStatus) {
+    openDialogStatus.hidden = false;
+    openDialogStatus.textContent = message;
+    openDialogStatus.dataset.tone = tone;
+    openDialogStatus.setAttribute('role', tone === 'error' ? 'alert' : 'status');
     if (tone === 'error') {
-      window.setTimeout(() => elements.editorStatus.focus(), 0);
+      window.setTimeout(() => openDialogStatus.focus(), 0);
     }
   }
 }
 
+function clearDialogStatus(statusElement) {
+  statusElement.hidden = true;
+  statusElement.textContent = '';
+  delete statusElement.dataset.tone;
+  statusElement.setAttribute('role', 'status');
+}
+
 function clearEditorStatus() {
-  elements.editorStatus.hidden = true;
-  elements.editorStatus.textContent = '';
-  delete elements.editorStatus.dataset.tone;
-  elements.editorStatus.setAttribute('role', 'status');
+  clearDialogStatus(elements.editorStatus);
+}
+
+function clearScheduleEditorStatus() {
+  clearDialogStatus(elements.scheduleEditorStatus);
 }
 
 function friendlyError(error) {
@@ -153,12 +191,18 @@ function setBusy(isBusy) {
   state.busy = isBusy;
   elements.manager.setAttribute('aria-busy', String(isBusy));
   elements.activityList.setAttribute('aria-busy', String(isBusy));
+  elements.scheduleManager.setAttribute('aria-busy', String(isBusy));
+  elements.scheduleList.setAttribute('aria-busy', String(isBusy));
   elements.addButton.disabled = isBusy;
+  elements.addScheduleButton.disabled = isBusy || !state.scheduleManifest;
   elements.refreshButton.disabled = isBusy;
   elements.teamButtons.forEach(button => {
     button.disabled = isBusy;
   });
   elements.activityList.querySelectorAll('button').forEach(button => {
+    button.disabled = isBusy;
+  });
+  elements.scheduleList.querySelectorAll('button').forEach(button => {
     button.disabled = isBusy;
   });
 }
@@ -169,6 +213,14 @@ function setEditorBusy(isBusy) {
   elements.cancelEditorButton.disabled = isBusy;
   elements.closeEditorButton.disabled = isBusy;
   elements.saveButton.textContent = isBusy ? '안전하게 저장하는 중…' : '저장하고 게시';
+}
+
+function setScheduleEditorBusy(isBusy) {
+  elements.scheduleEditorFields.disabled = isBusy;
+  elements.saveScheduleButton.disabled = isBusy;
+  elements.cancelScheduleEditorButton.disabled = isBusy;
+  elements.closeScheduleEditorButton.disabled = isBusy;
+  elements.saveScheduleButton.textContent = isBusy ? '안전하게 저장하는 중…' : '저장하고 게시';
 }
 
 function readSessionToken() {
@@ -201,11 +253,16 @@ function resetSession() {
     setEditorBusy(false);
     closeEditor();
   }
+  if (elements.scheduleEditorDialog.open) {
+    setScheduleEditorBusy(false);
+    closeScheduleEditor();
+  }
   state.token = null;
   state.user = null;
   state.headSha = null;
   state.manifests.stayup = null;
   state.manifests.firehawks = null;
+  state.scheduleManifest = null;
   removeSessionToken();
   renderAuthenticationState();
 }
@@ -568,6 +625,70 @@ function normalizeManifest(rawManifest, expectedTeam) {
   return { team: expectedTeam, activities };
 }
 
+function normalizeSchedule(rawSchedule) {
+  if (!rawSchedule || typeof rawSchedule !== 'object' || Array.isArray(rawSchedule)) {
+    throw new Error('출전 일정 데이터 형식이 올바르지 않습니다.');
+  }
+
+  const id = readString(rawSchedule.id, '일정 고유 ID', 80);
+  if (!ID_PATTERN.test(id)) throw new Error('일정 고유 ID 형식이 올바르지 않습니다.');
+  const date = readString(rawSchedule.date, '시작일', 10);
+  parseDateBoundary(date);
+  const endDate = readString(rawSchedule.endDate, '종료일', 10, true);
+  if (endDate) {
+    parseDateBoundary(endDate, true);
+    if (parseDateBoundary(endDate, true) < parseDateBoundary(date)) {
+      throw new Error('일정 종료일은 시작일보다 빠를 수 없습니다.');
+    }
+  }
+
+  const order = rawSchedule.order === undefined ? 0 : Number(rawSchedule.order);
+  if (!Number.isInteger(order) || order < 0 || order > 9999) {
+    throw new Error('일정 순서 정보가 올바르지 않습니다.');
+  }
+  if (typeof rawSchedule.published !== 'boolean') {
+    throw new Error('일정 공개 상태가 올바르지 않습니다.');
+  }
+
+  const schedule = {
+    id,
+    date,
+    title: readString(rawSchedule.title, '대회·행사명', 140),
+    location: readString(rawSchedule.location, '장소', 120),
+    order,
+    published: rawSchedule.published,
+  };
+  const displayDate = readString(rawSchedule.displayDate, '표시 날짜', 40, true);
+  const division = readString(rawSchedule.division, '출전 부문', 80, true);
+  const description = readString(rawSchedule.description, '안내 문구', 600, true);
+  if (endDate) schedule.endDate = endDate;
+  if (displayDate) schedule.displayDate = displayDate;
+  if (division) schedule.division = division;
+  if (description) schedule.description = description;
+  return schedule;
+}
+
+function normalizeScheduleManifest(rawManifest) {
+  if (
+    !rawManifest ||
+    typeof rawManifest !== 'object' ||
+    Array.isArray(rawManifest) ||
+    rawManifest.team !== 'firehawks' ||
+    !Array.isArray(rawManifest.schedules)
+  ) {
+    throw new Error('FireHawks 출전 일정 파일 형식이 올바르지 않습니다.');
+  }
+
+  const ids = new Set();
+  const schedules = rawManifest.schedules.map(rawSchedule => {
+    const schedule = normalizeSchedule(rawSchedule);
+    if (ids.has(schedule.id)) throw new Error(`중복된 일정 ID가 있습니다: ${schedule.id}`);
+    ids.add(schedule.id);
+    return schedule;
+  });
+  return { team: 'firehawks', schedules };
+}
+
 async function getBranchHead() {
   const ref = await githubRequest(`/repos/${REPOSITORY}/git/ref/heads/${encodeURIComponent(BRANCH)}`);
   const sha = ref?.object?.sha;
@@ -595,21 +716,62 @@ async function loadManifest(team, commitSha) {
   return normalizeManifest(parsed, team);
 }
 
+async function loadScheduleManifest(commitSha) {
+  const raw = await githubRequest(
+    `/repos/${REPOSITORY}/contents/${SCHEDULE_PATH}?ref=${encodeURIComponent(commitSha)}`,
+    {
+      accept: 'application/vnd.github.raw+json',
+      responseType: 'text',
+    },
+  );
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error('FireHawks 출전 일정 파일이 올바른 JSON이 아닙니다.');
+  }
+  return normalizeScheduleManifest(parsed);
+}
+
 async function loadManifests() {
   if (!state.token) return;
   setBusy(true);
   setStatus('GitHub에서 최신 활동을 불러오고 있습니다.', 'info');
   try {
     const headSha = await getBranchHead();
-    const [stayup, firehawks] = await Promise.all([
+    const scheduleResultPromise = loadScheduleManifest(headSha).then(
+      value => ({ value, error: null }),
+      error => ({ value: null, error }),
+    );
+    const [stayup, firehawks, scheduleResult] = await Promise.all([
       loadManifest('stayup', headSha),
       loadManifest('firehawks', headSha),
+      scheduleResultPromise,
     ]);
+    const scheduleManifest = scheduleResult.value;
+    const scheduleLoadError = scheduleResult.error;
+    if (scheduleLoadError instanceof GitHubApiError && scheduleLoadError.status === 401) {
+      throw scheduleLoadError;
+    }
+    if (scheduleLoadError) {
+      console.error(
+        '[관리 화면] FireHawks 출전 일정을 불러오지 못했습니다.',
+        scheduleLoadError,
+      );
+    }
     state.headSha = headSha;
     state.manifests.stayup = stayup;
     state.manifests.firehawks = firehawks;
+    state.scheduleManifest = scheduleManifest;
     renderManager();
-    setStatus('최신 활동을 불러왔습니다.', 'success');
+    if (scheduleLoadError) {
+      setStatus(
+        '활동 기록은 불러왔지만 FireHawks 출전 일정 파일을 불러오지 못했습니다. 일정 관리만 잠시 사용할 수 없습니다.',
+        'warning',
+      );
+    } else {
+      setStatus('최신 활동과 출전 일정을 불러왔습니다.', 'success');
+    }
   } catch (error) {
     if (error instanceof GitHubApiError && error.status === 401) resetSession();
     setStatus(friendlyError(error), 'error');
@@ -644,6 +806,56 @@ function sortActivities(activities) {
   });
 }
 
+function seoulTodayBoundary() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return Date.UTC(Number(values.year), Number(values.month) - 1, Number(values.day));
+}
+
+function scheduleTemporalState(schedule) {
+  const today = seoulTodayBoundary();
+  const start = parseDateBoundary(schedule.date);
+  const end = parseDateBoundary(schedule.endDate || schedule.date, true);
+  if (end < today) return 'ended';
+  if (start <= today) return 'ongoing';
+  return 'upcoming';
+}
+
+function scheduleStateLabel(schedule) {
+  if (!schedule.published) return { key: 'hidden', label: '사이트에서 숨김' };
+  const temporalState = scheduleTemporalState(schedule);
+  if (temporalState === 'ended') return { key: 'ended', label: '종료됨' };
+  if (temporalState === 'ongoing') return { key: 'ongoing', label: '진행 중' };
+  return { key: 'upcoming', label: '예정' };
+}
+
+function sortSchedules(schedules) {
+  const stateOrder = { ongoing: 0, upcoming: 1, ended: 2 };
+  return [...schedules].sort((left, right) => {
+    const leftState = scheduleTemporalState(left);
+    const rightState = scheduleTemporalState(right);
+    if (stateOrder[leftState] !== stateOrder[rightState]) {
+      return stateOrder[leftState] - stateOrder[rightState];
+    }
+    const leftStart = parseDateBoundary(left.date);
+    const rightStart = parseDateBoundary(right.date);
+    if (leftState === 'ended' && rightState === 'ended') {
+      const leftEnd = parseDateBoundary(left.endDate || left.date, true);
+      const rightEnd = parseDateBoundary(right.endDate || right.date, true);
+      if (leftEnd !== rightEnd) return rightEnd - leftEnd;
+    } else if (leftStart !== rightStart) {
+      return leftStart - rightStart;
+    }
+    if (right.order !== left.order) return right.order - left.order;
+    return left.id.localeCompare(right.id, 'ko');
+  });
+}
+
 function renderManager() {
   const stayupCount = state.manifests.stayup?.activities.length || 0;
   const firehawksCount = state.manifests.firehawks?.activities.length || 0;
@@ -660,6 +872,24 @@ function renderManager() {
   const manifest = state.manifests[state.selectedTeam];
   elements.selectedTeamTitle.textContent = `${team.label} 활동 목록`;
   renderActivityList(manifest?.activities || []);
+
+  const showScheduleManager = state.selectedTeam === 'firehawks';
+  elements.scheduleManager.hidden = !showScheduleManager;
+  if (showScheduleManager) {
+    if (state.scheduleManifest) {
+      renderScheduleList(state.scheduleManifest.schedules);
+    } else {
+      elements.scheduleSummary.textContent = '출전 일정을 불러오지 못했습니다.';
+      elements.scheduleList.replaceChildren();
+      const unavailable = createElement('div', 'empty-state');
+      unavailable.append(
+        createElement('strong', '', '출전 일정 관리만 잠시 사용할 수 없습니다.'),
+        createElement('span', '', '새로고침 후에도 계속되면 일정 데이터 파일을 확인해 주세요.'),
+      );
+      elements.scheduleList.append(unavailable);
+      elements.addScheduleButton.disabled = true;
+    }
+  }
 }
 
 function renderActivityList(activities) {
@@ -734,6 +964,79 @@ function renderActivityList(activities) {
     fragment.append(card);
   });
   elements.activityList.append(fragment);
+}
+
+function renderScheduleList(schedules) {
+  elements.scheduleList.replaceChildren();
+  const activeCount = schedules.filter(
+    schedule => schedule.published && scheduleTemporalState(schedule) !== 'ended',
+  ).length;
+  const endedCount = schedules.filter(
+    schedule => schedule.published && scheduleTemporalState(schedule) === 'ended',
+  ).length;
+  const hiddenCount = schedules.filter(schedule => !schedule.published).length;
+  elements.scheduleSummary.textContent =
+    `공개 예정·진행 ${activeCount}개 · 공개 종료 ${endedCount}개 · 숨김 ${hiddenCount}개 · 총 ${schedules.length}개`;
+
+  if (schedules.length === 0) {
+    const empty = createElement('div', 'empty-state');
+    empty.append(
+      createElement('strong', '', '등록된 출전 일정이 없습니다.'),
+      createElement('span', '', '새 일정 등록 버튼으로 다음 출전 일정을 추가하세요.'),
+    );
+    elements.scheduleList.append(empty);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  sortSchedules(schedules).forEach(schedule => {
+    const temporalState = scheduleTemporalState(schedule);
+    const visibleState = scheduleStateLabel(schedule);
+    const card = createElement('article', 'schedule-admin-card');
+    if (!schedule.published) card.classList.add('is-hidden');
+    if (temporalState === 'ended') card.classList.add('is-ended');
+
+    const body = createElement('div', 'schedule-admin-card__body');
+    const meta = createElement('div', 'schedule-admin-card__meta');
+    meta.append(
+      createElement(
+        'span',
+        `schedule-state schedule-state--${visibleState.key}`,
+        visibleState.label,
+      ),
+      createElement('span', '', activityDateLabel(schedule)),
+    );
+
+    const title = createElement('h4', '', schedule.title);
+    const facts = createElement('p', 'schedule-admin-card__facts');
+    facts.append(createElement('span', '', `장소 · ${schedule.location}`));
+    if (schedule.division) {
+      facts.append(createElement('span', '', `출전 부문 · ${schedule.division}`));
+    }
+    body.append(meta, title, facts);
+    if (schedule.description) {
+      body.append(createElement('p', 'schedule-admin-card__description', schedule.description));
+    }
+
+    const actions = createElement('div', 'schedule-admin-card__actions');
+    const editButton = createElement('button', 'card-button', '수정');
+    editButton.type = 'button';
+    editButton.addEventListener('click', () => openScheduleEditor(schedule));
+    const visibilityButton = createElement(
+      'button',
+      `card-button${schedule.published ? ' card-button--hide' : ''}`,
+      schedule.published ? '숨기기' : '다시 공개',
+    );
+    visibilityButton.type = 'button';
+    visibilityButton.addEventListener('click', () => {
+      void toggleScheduleVisibility(schedule);
+    });
+    actions.append(editButton, visibilityButton);
+
+    card.append(body, actions);
+    fragment.append(card);
+  });
+  elements.scheduleList.append(fragment);
 }
 
 function clearProcessedImage() {
@@ -824,6 +1127,69 @@ function closeEditor() {
       invoker.focus();
     } else if (!elements.manager.hidden) {
       elements.addButton.focus();
+    }
+  }, 0);
+}
+
+function openScheduleEditor(schedule = null) {
+  if (
+    state.busy ||
+    state.selectedTeam !== 'firehawks' ||
+    !state.scheduleManifest
+  ) {
+    return;
+  }
+  state.scheduleEditorInvoker = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null;
+  clearScheduleEditorStatus();
+  elements.scheduleForm.reset();
+  elements.scheduleEditorFields.scrollTop = 0;
+  state.editingSchedule = schedule ? { ...schedule } : null;
+
+  elements.scheduleId.value = schedule?.id || '';
+  elements.scheduleEditorTitle.textContent = schedule ? '출전 일정 수정' : '새 출전 일정 등록';
+  elements.scheduleDate.value = schedule?.date || '';
+  elements.scheduleEndDate.value = schedule?.endDate || '';
+  elements.scheduleDisplayDate.value = schedule?.displayDate || '';
+  elements.scheduleTitle.value = schedule?.title || '';
+  elements.scheduleLocation.value = schedule?.location || '';
+  elements.scheduleDivision.value = schedule?.division || '';
+  elements.scheduleDescription.value = schedule?.description || '';
+  elements.schedulePublished.checked = schedule ? schedule.published : true;
+
+  if (typeof elements.scheduleEditorDialog.showModal === 'function') {
+    elements.scheduleEditorDialog.showModal();
+  } else {
+    elements.scheduleEditorDialog.setAttribute('open', '');
+  }
+  const avoidOpeningKeyboard = window.matchMedia('(pointer: coarse)').matches
+    || window.innerWidth <= 820;
+  window.setTimeout(() => {
+    elements.scheduleEditorFields.scrollTop = 0;
+    (avoidOpeningKeyboard ? elements.closeScheduleEditorButton : elements.scheduleDate).focus();
+  }, 0);
+}
+
+function closeScheduleEditor() {
+  if (elements.scheduleEditorFields.disabled) return;
+  const invoker = state.scheduleEditorInvoker;
+  state.scheduleEditorInvoker = null;
+  if (
+    elements.scheduleEditorDialog.open &&
+    typeof elements.scheduleEditorDialog.close === 'function'
+  ) {
+    elements.scheduleEditorDialog.close();
+  } else {
+    elements.scheduleEditorDialog.removeAttribute('open');
+  }
+  state.editingSchedule = null;
+  clearScheduleEditorStatus();
+  window.setTimeout(() => {
+    if (invoker?.isConnected) {
+      invoker.focus();
+    } else if (!elements.scheduleManager.hidden) {
+      elements.addScheduleButton.focus();
     }
   }, 0);
 }
@@ -1011,6 +1377,60 @@ function buildActivityFromForm() {
   return normalizeActivity(activity);
 }
 
+function generateScheduleId(date, schedules) {
+  const compactDate = date.replaceAll('-', '');
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const random = crypto.getRandomValues(new Uint32Array(1))[0].toString(36).padStart(6, '0');
+    const id = `firehawks-schedule-${compactDate}-${random}`.slice(0, 80);
+    if (!schedules.some(schedule => schedule.id === id)) return id;
+  }
+  throw new Error('일정 고유 ID를 만들 수 없습니다. 다시 시도해 주세요.');
+}
+
+function nextScheduleOrderForDate(schedules, date, ignoredId = '') {
+  const sameDateOrders = schedules
+    .filter(schedule => schedule.id !== ignoredId && schedule.date === date)
+    .map(schedule => schedule.order || 0);
+  const nextOrder = (sameDateOrders.length ? Math.max(...sameDateOrders) : -1) + 1;
+  if (nextOrder > 9999) throw new Error('같은 날짜에 등록된 일정 순서가 너무 많습니다.');
+  return nextOrder;
+}
+
+function buildScheduleFromForm() {
+  const manifest = state.scheduleManifest;
+  if (!manifest) throw new Error('출전 일정 목록을 먼저 불러와 주세요.');
+
+  const original = state.editingSchedule;
+  const date = elements.scheduleDate.value.trim();
+  parseDateBoundary(date);
+  const endDate = elements.scheduleEndDate.value.trim();
+  if (endDate) {
+    parseDateBoundary(endDate, true);
+    if (parseDateBoundary(endDate, true) < parseDateBoundary(date)) {
+      throw new Error('일정 종료일은 시작일보다 빠를 수 없습니다.');
+    }
+  }
+
+  const id = original?.id || generateScheduleId(date, manifest.schedules);
+  const order =
+    original && original.date === date
+      ? original.order
+      : nextScheduleOrderForDate(manifest.schedules, date, original?.id);
+  const schedule = {
+    id,
+    date,
+    title: elements.scheduleTitle.value.trim(),
+    location: elements.scheduleLocation.value.trim(),
+    order,
+    published: elements.schedulePublished.checked,
+  };
+  optionalField(schedule, 'endDate', endDate);
+  optionalField(schedule, 'displayDate', elements.scheduleDisplayDate.value.trim());
+  optionalField(schedule, 'division', elements.scheduleDivision.value.trim());
+  optionalField(schedule, 'description', elements.scheduleDescription.value.trim());
+  return normalizeSchedule(schedule);
+}
+
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1040,7 +1460,7 @@ async function createBlob(content, encoding) {
   return result.sha;
 }
 
-async function commitManifest({ team, manifest, image, imagePath, message }) {
+async function commitData({ dataPath, payload, image, imagePath, message }) {
   const expectedHead = state.headSha;
   if (!expectedHead) throw new Error('저장소 기준 버전을 확인할 수 없습니다. 새로고침해 주세요.');
   const currentHead = await getBranchHead();
@@ -1050,7 +1470,7 @@ async function commitManifest({ team, manifest, image, imagePath, message }) {
   const baseTreeSha = baseCommit?.tree?.sha;
   if (typeof baseTreeSha !== 'string') throw new Error('GitHub 기준 파일 트리를 확인할 수 없습니다.');
 
-  const jsonContent = `${JSON.stringify(manifest, null, 2)}\n`;
+  const jsonContent = `${JSON.stringify(payload, null, 2)}\n`;
   const jsonBlobPromise = createBlob(jsonContent, 'utf-8');
   const imageBlobPromise = image
     ? blobToBase64(image.blob).then(content => createBlob(content, 'base64'))
@@ -1059,7 +1479,7 @@ async function commitManifest({ team, manifest, image, imagePath, message }) {
 
   const treeEntries = [
     {
-      path: TEAMS[team].dataPath,
+      path: dataPath,
       mode: '100644',
       type: 'blob',
       sha: jsonBlobSha,
@@ -1150,9 +1570,9 @@ async function saveActivity(event) {
   setBusy(true);
   setStatus('사진과 활동 내용을 하나의 안전한 커밋으로 저장하고 있습니다.', 'info');
   try {
-    const commitSha = await commitManifest({
-      team: state.selectedTeam,
-      manifest: nextManifest,
+    const commitSha = await commitData({
+      dataPath: TEAMS[state.selectedTeam].dataPath,
+      payload: nextManifest,
       image,
       imagePath: activity.image,
       message: buildCommitMessage(action, activity.title),
@@ -1194,9 +1614,9 @@ async function toggleActivityVisibility(activity) {
   setBusy(true);
   setStatus(`활동을 ${action} 처리하고 있습니다.`, 'info');
   try {
-    const commitSha = await commitManifest({
-      team: state.selectedTeam,
-      manifest: nextManifest,
+    const commitSha = await commitData({
+      dataPath: TEAMS[state.selectedTeam].dataPath,
+      payload: nextManifest,
       image: null,
       imagePath: '',
       message: buildCommitMessage(action, activity.title),
@@ -1208,6 +1628,127 @@ async function toggleActivityVisibility(activity) {
       nextActivity.published
         ? '활동을 다시 공개했습니다. 배포 후 사이트에 표시됩니다.'
         : '활동을 숨겼습니다. 기록과 사진은 안전하게 보존됩니다.',
+      'success',
+    );
+  } catch (error) {
+    if (error instanceof GitHubApiError && error.status === 401) resetSession();
+    setStatus(friendlyError(error), error instanceof ContentConflictError ? 'warning' : 'error');
+    if (error instanceof ContentConflictError) {
+      try {
+        await loadManifests();
+      } catch {
+        // loadManifests already reports the failure.
+      }
+    }
+  } finally {
+    setBusy(false);
+  }
+}
+
+function buildScheduleCommitMessage(action, title) {
+  const cleanTitle = title.replace(/\s+/g, ' ').trim().slice(0, 80);
+  return `cms: FireHawks 출전 일정 ${action} - ${cleanTitle}`;
+}
+
+async function saveSchedule(event) {
+  event.preventDefault();
+  if (state.busy) {
+    setStatus('다른 저장 작업이 끝날 때까지 기다려 주세요.', 'warning');
+    return;
+  }
+  if (!elements.scheduleForm.reportValidity()) return;
+
+  let schedule;
+  try {
+    schedule = buildScheduleFromForm();
+  } catch (error) {
+    setStatus(friendlyError(error), 'error');
+    return;
+  }
+
+  const original = state.editingSchedule;
+  if (original?.published && !schedule.published) {
+    const confirmed = window.confirm(
+      '이 출전 일정을 사이트에서 숨길까요? 일정은 삭제되지 않으며 나중에 다시 공개할 수 있습니다.',
+    );
+    if (!confirmed) return;
+  }
+
+  const manifest = state.scheduleManifest;
+  const schedules = original
+    ? manifest.schedules.map(item => (item.id === original.id ? schedule : item))
+    : [...manifest.schedules, schedule];
+  const nextManifest = { team: 'firehawks', schedules };
+  const action = original ? '수정' : '추가';
+
+  setScheduleEditorBusy(true);
+  setBusy(true);
+  setStatus('출전 일정을 안전한 GitHub 커밋으로 저장하고 있습니다.', 'info');
+  try {
+    const commitSha = await commitData({
+      dataPath: SCHEDULE_PATH,
+      payload: nextManifest,
+      image: null,
+      imagePath: '',
+      message: buildScheduleCommitMessage(action, schedule.title),
+    });
+    state.scheduleManifest = nextManifest;
+    state.headSha = commitSha;
+    setScheduleEditorBusy(false);
+    closeScheduleEditor();
+    renderManager();
+    setStatus('출전 일정 저장이 완료되었습니다. Vercel 배포 후 사이트에 자동 반영됩니다.', 'success');
+  } catch (error) {
+    if (error instanceof GitHubApiError && error.status === 401) resetSession();
+    setStatus(friendlyError(error), error instanceof ContentConflictError ? 'warning' : 'error');
+    if (error instanceof ContentConflictError) {
+      try {
+        await loadManifests();
+      } catch {
+        // loadManifests already reports the failure.
+      }
+    }
+  } finally {
+    setScheduleEditorBusy(false);
+    setBusy(false);
+  }
+}
+
+async function toggleScheduleVisibility(schedule) {
+  if (state.busy || !state.scheduleManifest) return;
+  if (schedule.published) {
+    const confirmed = window.confirm(
+      '이 출전 일정을 사이트에서 숨길까요? 일정은 삭제되지 않으며 언제든 다시 공개할 수 있습니다.',
+    );
+    if (!confirmed) return;
+  }
+
+  const nextSchedule = { ...schedule, published: !schedule.published };
+  const nextManifest = {
+    team: 'firehawks',
+    schedules: state.scheduleManifest.schedules.map(item =>
+      item.id === schedule.id ? nextSchedule : item,
+    ),
+  };
+  const action = nextSchedule.published ? '공개' : '숨김';
+
+  setBusy(true);
+  setStatus(`출전 일정을 ${action} 처리하고 있습니다.`, 'info');
+  try {
+    const commitSha = await commitData({
+      dataPath: SCHEDULE_PATH,
+      payload: nextManifest,
+      image: null,
+      imagePath: '',
+      message: buildScheduleCommitMessage(action, schedule.title),
+    });
+    state.scheduleManifest = nextManifest;
+    state.headSha = commitSha;
+    renderManager();
+    setStatus(
+      nextSchedule.published
+        ? '출전 일정을 다시 공개했습니다. 배포 후 사이트에 표시됩니다.'
+        : '출전 일정을 숨겼습니다. 일정은 안전하게 보존됩니다.',
       'success',
     );
   } catch (error) {
@@ -1264,6 +1805,7 @@ elements.refreshButton.addEventListener('click', () => {
   void loadManifests().catch(() => {});
 });
 elements.addButton.addEventListener('click', () => openEditor());
+elements.addScheduleButton.addEventListener('click', () => openScheduleEditor());
 elements.teamButtons.forEach(button => {
   button.addEventListener('click', () => selectTeam(button.dataset.team));
 });
@@ -1275,6 +1817,13 @@ elements.editorDialog.addEventListener('cancel', event => {
     return;
   }
   closeEditor();
+});
+elements.closeScheduleEditorButton.addEventListener('click', closeScheduleEditor);
+elements.cancelScheduleEditorButton.addEventListener('click', closeScheduleEditor);
+elements.scheduleEditorDialog.addEventListener('cancel', event => {
+  event.preventDefault();
+  if (elements.scheduleEditorFields.disabled) return;
+  closeScheduleEditor();
 });
 elements.activityImage.addEventListener('change', () => {
   const [file] = elements.activityImage.files || [];
@@ -1304,6 +1853,9 @@ elements.activityImage.addEventListener('change', () => {
 });
 elements.activityForm.addEventListener('submit', event => {
   void saveActivity(event);
+});
+elements.scheduleForm.addEventListener('submit', event => {
+  void saveSchedule(event);
 });
 
 void restoreSession();

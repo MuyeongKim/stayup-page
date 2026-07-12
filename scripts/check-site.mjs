@@ -2,7 +2,13 @@ import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { contentFiles, readAndValidateContent, validateReferencedImages } from './validate-content.mjs';
+import {
+  contentFiles,
+  readAndValidateContent,
+  readAndValidateSchedule,
+  scheduleFiles,
+  validateReferencedImages
+} from './validate-content.mjs';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ignoredDirectories = new Set(['.git', 'dist', 'node_modules']);
@@ -79,6 +85,9 @@ async function main() {
   for (const fileConfig of contentFiles) {
     const { content } = await readAndValidateContent(fileConfig);
     await validateReferencedImages(content);
+  }
+  for (const fileConfig of scheduleFiles) {
+    await readAndValidateSchedule(fileConfig);
   }
 
   const scripts = await collectFiles(rootDir, new Set(['.js', '.mjs']));

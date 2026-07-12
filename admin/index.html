@@ -12,7 +12,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests"
     />
-    <title>Stay-Up 활동 관리</title>
+    <title>Stay-Up 활동 및 일정 관리</title>
     <link rel="stylesheet" href="/admin/admin.css" />
     <script type="module" src="/admin/admin.js"></script>
   </head>
@@ -27,9 +27,9 @@
             <span>STAY-UP</span>
           </a>
           <p class="eyebrow">ACTIVITY MANAGER</p>
-          <h1>활동 기록 관리</h1>
+          <h1>활동 기록 및 일정 관리</h1>
           <p class="header-copy">
-            사진과 활동 내용을 등록하면 GitHub에 안전하게 저장되고 사이트가 자동으로 갱신됩니다.
+            활동 기록과 FireHawks 출전 일정을 등록하면 GitHub에 안전하게 저장되고 사이트가 자동으로 갱신됩니다.
           </p>
         </div>
 
@@ -109,6 +109,26 @@
             <small id="firehawks-count">0개</small>
           </button>
         </div>
+
+        <section
+          id="schedule-manager"
+          class="schedule-manager"
+          aria-labelledby="schedule-manager-title"
+          hidden
+        >
+          <div class="list-heading schedule-manager__heading">
+            <div>
+              <p class="eyebrow">NEXT MATCH</p>
+              <h3 id="schedule-manager-title">FireHawks 출전 일정 관리</h3>
+              <p id="schedule-summary">출전 일정을 불러오는 중입니다.</p>
+            </div>
+            <button id="add-schedule-button" class="button button--primary" type="button">
+              새 일정 등록
+            </button>
+          </div>
+
+          <div id="schedule-list" class="schedule-list" aria-busy="false"></div>
+        </section>
 
         <div class="list-heading">
           <div>
@@ -301,6 +321,135 @@
             취소
           </button>
           <button id="save-button" class="button button--primary" type="submit">
+            저장하고 게시
+          </button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog
+      id="schedule-editor-dialog"
+      class="editor-dialog"
+      aria-labelledby="schedule-editor-title"
+      tabindex="-1"
+    >
+      <form id="schedule-form" class="editor-form">
+        <header class="editor-header">
+          <div>
+            <p class="eyebrow">FIREHAWKS · NEXT MATCH</p>
+            <h2 id="schedule-editor-title">새 출전 일정 등록</h2>
+          </div>
+          <button
+            id="close-schedule-editor-button"
+            class="icon-button"
+            type="button"
+            aria-label="출전 일정 편집 창 닫기"
+          >
+            ×
+          </button>
+        </header>
+
+        <div
+          id="schedule-editor-status"
+          class="editor-status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          tabindex="-1"
+          hidden
+        ></div>
+
+        <fieldset id="schedule-editor-fields" class="editor-fields">
+          <input id="schedule-id" name="id" type="hidden" />
+
+          <div class="field-grid field-grid--two">
+            <label class="field">
+              <span>시작일 <strong aria-hidden="true">*</strong></span>
+              <input
+                id="schedule-date"
+                name="date"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="2026-08-15"
+                pattern="\d{4}(-\d{2})?(-\d{2})?"
+                required
+              />
+              <small>YYYY, YYYY-MM 또는 YYYY-MM-DD</small>
+            </label>
+            <label class="field">
+              <span>종료일</span>
+              <input
+                id="schedule-end-date"
+                name="endDate"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="여러 날 진행하는 경우"
+                pattern="\d{4}(-\d{2})?(-\d{2})?"
+              />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>화면 표시 날짜</span>
+            <input
+              id="schedule-display-date"
+              name="displayDate"
+              type="text"
+              maxlength="40"
+              placeholder="예: 2026년 8월 15일(토)"
+            />
+            <small>비워두면 시작일과 종료일이 자동으로 표시됩니다.</small>
+          </label>
+
+          <label class="field">
+            <span>대회·행사명 <strong aria-hidden="true">*</strong></span>
+            <input id="schedule-title" name="title" type="text" maxlength="140" required />
+          </label>
+
+          <div class="field-grid field-grid--two">
+            <label class="field">
+              <span>장소 <strong aria-hidden="true">*</strong></span>
+              <input id="schedule-location" name="location" type="text" maxlength="120" required />
+            </label>
+            <label class="field">
+              <span>출전 부문</span>
+              <input
+                id="schedule-division"
+                name="division"
+                type="text"
+                maxlength="80"
+                placeholder="예: 일반부"
+              />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>안내 문구</span>
+            <textarea
+              id="schedule-description"
+              name="description"
+              rows="5"
+              maxlength="600"
+              placeholder="출전 일정에 관해 함께 안내할 내용을 입력하세요."
+            ></textarea>
+          </label>
+
+          <label class="publish-control">
+            <input id="schedule-published" name="published" type="checkbox" checked />
+            <span>
+              <strong>사이트에 공개</strong>
+              <small>끄면 일정은 보존되고 FireHawks 페이지에서만 숨겨집니다.</small>
+            </span>
+          </label>
+        </fieldset>
+
+        <footer class="editor-footer">
+          <button id="cancel-schedule-editor-button" class="button button--quiet" type="button">
+            취소
+          </button>
+          <button id="save-schedule-button" class="button button--primary" type="submit">
             저장하고 게시
           </button>
         </footer>

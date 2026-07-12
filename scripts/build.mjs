@@ -3,7 +3,13 @@ import { cp, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs/prom
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { contentFiles, readAndValidateContent, validateReferencedImages } from './validate-content.mjs';
+import {
+  contentFiles,
+  readAndValidateContent,
+  readAndValidateSchedule,
+  scheduleFiles,
+  validateReferencedImages
+} from './validate-content.mjs';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(rootDir, 'dist');
@@ -110,6 +116,16 @@ async function buildContent() {
     }
 
     const outputContent = { ...content, activities: builtActivities };
+    const outputPath = path.join(outputDir, fileConfig.path);
+    await writeFile(outputPath, `${JSON.stringify(outputContent, null, 2)}\n`);
+  }
+
+  for (const fileConfig of scheduleFiles) {
+    const { content } = await readAndValidateSchedule(fileConfig);
+    const outputContent = {
+      ...content,
+      schedules: content.schedules.filter(item => item.published === true)
+    };
     const outputPath = path.join(outputDir, fileConfig.path);
     await writeFile(outputPath, `${JSON.stringify(outputContent, null, 2)}\n`);
   }
