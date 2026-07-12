@@ -4,7 +4,6 @@
     {
       "id": "drone-world-cup-2025",
       "date": "2025",
-      "displayDate": "2025",
       "category": "드론축구 대회",
       "title": "2025 드론 월드컵",
       "description": "전주에서 열린 드론 월드컵에 참가해 파이어호크스의 첫 승을 기록했습니다.",
@@ -12,15 +11,15 @@
       "imageAlt": "2025 드론 월드컵에 참가한 파이어호크스",
       "imageWidth": 1600,
       "imageHeight": 1349,
-      "badge": "팀 최초 1승",
-      "badgeTone": "default",
       "order": 5,
-      "published": true
+      "published": true,
+      "displayDate": "2025",
+      "badge": "팀 최초 1승",
+      "badgeTone": "default"
     },
     {
       "id": "goheung-summer-beach-festa-2025",
       "date": "2025-07",
-      "displayDate": "2025 여름",
       "category": "드론축구 행사",
       "title": "고흥 드론 서머비치페스타",
       "description": "전남 고흥에서 열린 드론 축구 행사에 참가해 다양한 팀과 경기를 치렀습니다.",
@@ -29,12 +28,12 @@
       "imageWidth": 1600,
       "imageHeight": 1207,
       "order": 4,
-      "published": true
+      "published": true,
+      "displayDate": "2025 여름"
     },
     {
       "id": "yanggu-drone-festival-2025",
       "date": "2025-07",
-      "displayDate": "2025",
       "category": "드론축구 대회",
       "title": "청춘양구 민군 드론 페스티벌",
       "description": "강원 양구에서 열린 민군 드론 페스티벌에 참가해 전국 팀들과 경쟁했습니다.",
@@ -43,12 +42,12 @@
       "imageWidth": 1200,
       "imageHeight": 1600,
       "order": 3,
-      "published": true
+      "published": true,
+      "displayDate": "2025"
     },
     {
       "id": "jeonju-mayors-cup-2024",
       "date": "2024",
-      "displayDate": "2024 하반기",
       "category": "전국 대회",
       "title": "전주시장배 전국드론축구대회",
       "description": "전북대학교에서 열린 전국드론축구대회에 참가했습니다.",
@@ -57,12 +56,12 @@
       "imageWidth": 1600,
       "imageHeight": 1067,
       "order": 2,
-      "published": true
+      "published": true,
+      "displayDate": "2024 하반기"
     },
     {
       "id": "namwon-mayors-cup-2024",
       "date": "2024",
-      "displayDate": "2024 상반기",
       "category": "전국 대회",
       "title": "남원시장배 전국드론축구대회",
       "description": "창단 후 처음 참가한 공식 대회로 파이어호크스의 출발점이 됐습니다.",
@@ -70,10 +69,25 @@
       "imageAlt": "남원시장배 전국드론축구대회 참가 현장",
       "imageWidth": 1273,
       "imageHeight": 1018,
-      "badge": "창단 첫 출전",
-      "badgeTone": "muted",
       "order": 1,
-      "published": true
+      "published": true,
+      "displayDate": "2024 상반기",
+      "badge": "창단 첫 출전",
+      "badgeTone": "muted"
+    },
+    {
+      "id": "firehawks-20251017-1324dkv",
+      "date": "2025-10-17",
+      "category": "대회",
+      "title": "남원시장배 전국드론축구대회",
+      "description": "남원시장배 전국드론축구대회",
+      "image": "/images/activity-uploads/firehawks-20251017-1324dkv-mrh8idk9.webp",
+      "imageAlt": "남원시장배 전국드론축구대회",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 0,
+      "published": true,
+      "displayDate": "2025년 하반기"
     }
   ]
 }
