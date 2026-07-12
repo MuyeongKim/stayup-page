@@ -66,6 +66,19 @@
       "imageHeight": 1050,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20251216-9sbh7u",
+      "date": "2025-12-16",
+      "category": "정기훈련",
+      "title": "25년 12월 정기훈련",
+      "description": "25년 12월 정기훈련",
+      "image": "/images/activity-uploads/stayup-20251216-9sbh7u-mrh9dmoz.webp",
+      "imageAlt": "25년 12월 정기훈련",
+      "imageWidth": 1400,
+      "imageHeight": 1050,
+      "order": 0,
+      "published": true
     }
   ]
 }
