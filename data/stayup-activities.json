@@ -4,7 +4,6 @@
     {
       "id": "buan-naebyeonsan-search-2025",
       "date": "2025-09-27",
-      "endDate": "2025-10-01",
       "category": "인명 수색",
       "title": "부안군 내변산 산악 실종자 수색",
       "description": "산악과 수변이 맞닿은 광범위한 수색 구역에서 드론을 운용해 구조대상자 탐색을 지원했습니다.",
@@ -13,7 +12,8 @@
       "imageWidth": 1600,
       "imageHeight": 739,
       "order": 2,
-      "published": true
+      "published": true,
+      "endDate": "2025-10-01"
     },
     {
       "id": "jinan-training-2025-08",
@@ -26,6 +26,19 @@
       "imageWidth": 1600,
       "imageHeight": 1200,
       "order": 1,
+      "published": true
+    },
+    {
+      "id": "stayup-20250625-pikg47",
+      "date": "2025-06-25",
+      "category": "정기훈련",
+      "title": "2025년 6월 정기훈련",
+      "description": "충북 영동 터널방제센터 훈련",
+      "image": "/images/activity-uploads/stayup-20250625-pikg47-mrh7brpl.webp",
+      "imageAlt": "훈련 단체사진",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 0,
       "published": true
     }
   ]
