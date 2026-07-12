@@ -29,7 +29,23 @@ body {
     color: var(--text);
     font-family: "Noto Sans KR", sans-serif;
     line-height: 1.65;
+    line-break: strict;
+    word-break: keep-all;
+    overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    text-wrap: balance;
+}
+
+p,
+li,
+dd {
+    text-wrap: pretty;
 }
 
 body,
@@ -445,6 +461,7 @@ img {
 .record-body p {
     margin: 0;
     color: var(--muted);
+    white-space: pre-line;
 }
 
 .story-section {
@@ -669,6 +686,7 @@ img {
 .schedule-description {
     margin: 0;
     color: var(--muted);
+    white-space: pre-line;
 }
 
 .site-footer {

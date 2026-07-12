@@ -36,8 +36,22 @@ body {
     color: var(--ink);
     background: var(--white);
     line-height: 1.65;
+    line-break: strict;
     word-break: keep-all;
     overflow-wrap: break-word;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    text-wrap: balance;
+}
+
+p,
+li,
+dd {
+    text-wrap: pretty;
 }
 
 body,
@@ -673,6 +687,7 @@ dd {
 .activity-content p {
     margin-bottom: 0;
     color: var(--muted);
+    white-space: pre-line;
 }
 
 /* Leadership */
