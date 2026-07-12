@@ -118,6 +118,19 @@
       "imageHeight": 901,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20260429-wec5lm",
+      "date": "2026-04-29",
+      "category": "정기훈련",
+      "title": "26년 4월 정기훈련",
+      "description": "26년 4월 정기훈련",
+      "image": "/images/activity-uploads/stayup-20260429-wec5lm-mrh9qycx.webp",
+      "imageAlt": "폐건물",
+      "imageWidth": 1200,
+      "imageHeight": 1600,
+      "order": 0,
+      "published": true
     }
   ]
 }
