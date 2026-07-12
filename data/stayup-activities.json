@@ -157,6 +157,19 @@
       "imageHeight": 1200,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20260619-kyg726",
+      "date": "2026-06-19",
+      "category": "드론실증",
+      "title": "드론 수난구조기법 테스트",
+      "description": "열화상 활용 구조 실증",
+      "image": "/images/activity-uploads/stayup-20260619-kyg726-mrha3w6k.webp",
+      "imageAlt": "실증",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 0,
+      "published": true
     }
   ]
 }
