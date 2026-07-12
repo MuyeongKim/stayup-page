@@ -105,10 +105,12 @@ function appendActivityDate(container, activity) {
     container.append(startTime, separator, endTime);
 }
 
-function createStayUpActivityCard(activity, isFeatured) {
+function createStayUpActivityCard(activity) {
     const article = document.createElement('article');
-    article.className = isFeatured ? 'activity-card activity-featured' : 'activity-card';
+    const titleId = `stayup-activity-title-${activity.id}`;
+    article.className = 'activity-card';
     article.dataset.activityId = activity.id;
+    article.setAttribute('aria-labelledby', titleId);
 
     const media = document.createElement('div');
     media.className = 'activity-media';
@@ -131,6 +133,7 @@ function createStayUpActivityCard(activity, isFeatured) {
     appendActivityDate(content, activity);
 
     const title = document.createElement('h3');
+    title.id = titleId;
     title.textContent = activity.title;
 
     const description = document.createElement('p');
@@ -172,8 +175,8 @@ async function initStayUpActivities() {
         }
 
         const fragment = document.createDocumentFragment();
-        visibleActivities.forEach((activity, index) => {
-            fragment.append(createStayUpActivityCard(activity, index === 0));
+        visibleActivities.forEach((activity) => {
+            fragment.append(createStayUpActivityCard(activity));
         });
 
         container.replaceChildren(fragment);
