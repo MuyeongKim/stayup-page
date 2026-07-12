@@ -18,7 +18,7 @@
     },
     {
       "id": "goheung-summer-beach-festa-2025",
-      "date": "2025-07",
+      "date": "2025-07-26",
       "category": "드론축구 행사",
       "title": "고흥 드론 서머비치페스타",
       "description": "전남 고흥에서 열린 드론 축구 행사에 참가해 다양한 팀과 경기를 치렀습니다.",
@@ -26,7 +26,7 @@
       "imageAlt": "고흥 드론 서머비치페스타 참가 현장",
       "imageWidth": 1600,
       "imageHeight": 1207,
-      "order": 4,
+      "order": 0,
       "published": true,
       "displayDate": "2025 여름"
     },
