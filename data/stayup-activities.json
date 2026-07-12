@@ -79,6 +79,19 @@
       "imageHeight": 1050,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20260115-156v9fx",
+      "date": "2026-01-15",
+      "category": "회의",
+      "title": "26년 임원진 회의",
+      "description": "임원진 회의",
+      "image": "/images/activity-uploads/stayup-20260115-156v9fx-mrh9gosj.webp",
+      "imageAlt": "26년 임원진 회의",
+      "imageWidth": 960,
+      "imageHeight": 720,
+      "order": 0,
+      "published": true
     }
   ]
 }
