@@ -1,0 +1,16 @@
+{
+  "name": "stayup-page",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npm run check && node scripts/build.mjs && node scripts/check-dist.mjs",
+    "check": "node scripts/check-site.mjs && node scripts/test-oauth.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "sharp": "0.34.3"
+  }
+}

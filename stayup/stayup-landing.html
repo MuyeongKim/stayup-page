@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>전북소방드론팀 Stay-Up | 재난 현장의 골든타임을 지키는 하늘의 눈</title>
     <meta name="description" content="화재·수색·구조 현장에서 드론으로 골든타임을 확보하는 전북소방드론팀 Stay-Up의 임무, 현장 활동과 대원을 소개합니다.">
-    <link rel="canonical" href="https://stayup-ai.com/stayup/stayup-landing.html">
+    <link rel="canonical" href="https://www.stayup-ai.com/stayup/stayup-landing.html">
 
     <meta property="og:locale" content="ko_KR">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Stay-Up">
     <meta property="og:title" content="전북소방드론팀 Stay-Up">
     <meta property="og:description" content="재난 현장의 골든타임을 지키는 하늘의 눈, 전북소방드론팀 Stay-Up입니다.">
-    <meta property="og:url" content="https://stayup-ai.com/stayup/stayup-landing.html">
-    <meta property="og:image" content="https://stayup-ai.com/images/optimized/buan251001.webp">
+    <meta property="og:url" content="https://www.stayup-ai.com/stayup/stayup-landing.html">
+    <meta property="og:image" content="https://www.stayup-ai.com/images/optimized/buan251001.webp">
     <meta property="og:image:width" content="1600">
     <meta property="og:image:height" content="739">
     <meta property="og:image:alt" content="내변산 수색 현장에서 드론을 운용하는 소방대원">
@@ -21,7 +21,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="전북소방드론팀 Stay-Up">
     <meta name="twitter:description" content="재난 현장의 골든타임을 지키는 하늘의 눈">
-    <meta name="twitter:image" content="https://stayup-ai.com/images/optimized/buan251001.webp">
+    <meta name="twitter:image" content="https://www.stayup-ai.com/images/optimized/buan251001.webp">
     <meta name="twitter:image:alt" content="내변산 수색 현장에서 드론을 운용하는 소방대원">
     <meta name="theme-color" content="#071d35">
 
@@ -147,34 +147,13 @@
                         <p class="section-kicker">FIELD REPORT</p>
                         <h2 id="activities-title">최근 현장 활동</h2>
                     </div>
-                    <p>훈련에서 쌓은 숙련도를 실제 재난 대응으로 이어갑니다.</p>
+                    <p>훈련에서 쌓은 숙련도를 실제 재난 대응으로 이어갑니다. <a class="section-link" href="/activities/?team=stayup">전체 활동 보기</a></p>
                 </div>
 
-                <div class="activities-grid">
-                    <article class="activity-card activity-featured">
-                        <div class="activity-media">
-                            <img src="/images/optimized/buan251001.webp" alt="내변산 수색 현장에서 보트 위 드론을 운용하는 소방대원" width="1600" height="739" loading="lazy" decoding="async">
-                            <span class="activity-type">인명 수색</span>
-                        </div>
-                        <div class="activity-content">
-                            <time datetime="2025-09-27">2025. 09. 27</time><span aria-hidden="true"> — </span><time datetime="2025-10-01">10. 01</time>
-                            <h3>부안군 내변산 산악 실종자 수색</h3>
-                            <p>산악과 수변이 맞닿은 광범위한 수색 구역에서 드론을 운용해 구조대상자 탐색을 지원했습니다.</p>
-                        </div>
-                    </article>
-
-                    <article class="activity-card">
-                        <div class="activity-media">
-                            <img src="/images/optimized/jinan0825.webp" alt="국립진안고원산림치유원에서 정기훈련을 마친 Stay-Up 대원들" width="1600" height="1200" loading="lazy" decoding="async">
-                            <span class="activity-type">정기 훈련</span>
-                        </div>
-                        <div class="activity-content">
-                            <time datetime="2025-08-25">2025. 08. 25</time>
-                            <h3>전북소방 드론 인력풀 정기훈련</h3>
-                            <p>국립진안고원산림치유원에서 산악 수색 절차와 팀 단위 드론 운용 역량을 점검했습니다.</p>
-                        </div>
-                    </article>
+                <div class="activities-grid" id="stayup-activities-list" data-activity-limit="3" aria-live="polite" aria-busy="true">
+                    <p class="activity-load-status" role="status">최근 활동을 불러오는 중입니다.</p>
                 </div>
+                <noscript><p>활동 내역을 보려면 브라우저에서 JavaScript를 활성화해 주세요.</p></noscript>
             </div>
         </section>
 
@@ -295,6 +274,7 @@
     </footer>
 
     <script src="../js/common.js"></script>
+    <script src="../js/activity-data.js"></script>
     <script src="../js/stayup.js"></script>
 </body>
 </html>

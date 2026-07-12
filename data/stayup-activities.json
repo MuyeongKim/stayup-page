@@ -1,0 +1,32 @@
+{
+  "team": "stayup",
+  "activities": [
+    {
+      "id": "buan-naebyeonsan-search-2025",
+      "date": "2025-09-27",
+      "endDate": "2025-10-01",
+      "category": "인명 수색",
+      "title": "부안군 내변산 산악 실종자 수색",
+      "description": "산악과 수변이 맞닿은 광범위한 수색 구역에서 드론을 운용해 구조대상자 탐색을 지원했습니다.",
+      "image": "/images/optimized/buan251001.webp",
+      "imageAlt": "내변산 수색 현장에서 보트 위 드론을 운용하는 소방대원",
+      "imageWidth": 1600,
+      "imageHeight": 739,
+      "order": 2,
+      "published": true
+    },
+    {
+      "id": "jinan-training-2025-08",
+      "date": "2025-08-25",
+      "category": "정기 훈련",
+      "title": "전북소방 드론 인력풀 정기훈련",
+      "description": "국립진안고원산림치유원에서 산악 수색 절차와 팀 단위 드론 운용 역량을 점검했습니다.",
+      "image": "/images/optimized/jinan0825.webp",
+      "imageAlt": "국립진안고원산림치유원에서 정기훈련을 마친 Stay-Up 대원들",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 1,
+      "published": true
+    }
+  ]
+}

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="strict-origin" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: https://raw.githubusercontent.com; connect-src 'self' https://api.github.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'none'; upgrade-insecure-requests"
+    />
+    <title>Stay-Up 활동 관리</title>
+    <link rel="stylesheet" href="/admin/admin.css" />
+    <script type="module" src="/admin/admin.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">본문으로 바로가기</a>
+
+    <header class="page-header">
+      <div class="page-header__inner">
+        <div class="brand-block">
+          <a class="brand-link" href="/" aria-label="Stay-Up 포털 홈으로 이동">
+            <span class="brand-mark" aria-hidden="true">S</span>
+            <span>STAY-UP</span>
+          </a>
+          <p class="eyebrow">ACTIVITY MANAGER</p>
+          <h1>활동 기록 관리</h1>
+          <p class="header-copy">
+            사진과 활동 내용을 등록하면 GitHub에 안전하게 저장되고 사이트가 자동으로 갱신됩니다.
+          </p>
+        </div>
+
+        <div class="account-panel" aria-label="GitHub 계정">
+          <div id="account-details" class="account-details" hidden>
+            <span class="account-dot" aria-hidden="true"></span>
+            <span>
+              <strong id="account-name"></strong>
+              <small>GitHub 연결됨</small>
+            </span>
+          </div>
+          <button id="login-button" class="button button--primary" type="button">
+            GitHub로 로그인
+          </button>
+          <button id="logout-button" class="button button--quiet" type="button" hidden>
+            로그아웃
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="page-main" tabindex="-1">
+      <div
+        id="status-message"
+        class="status-message"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        관리 화면을 준비하고 있습니다.
+      </div>
+
+      <section id="signed-out-panel" class="signed-out-panel" aria-labelledby="signed-out-title">
+        <div class="signed-out-panel__icon" aria-hidden="true">↗</div>
+        <div>
+          <h2 id="signed-out-title">GitHub 로그인이 필요합니다</h2>
+          <p>
+            저장소 쓰기 권한이 있는 GitHub 계정으로 로그인하세요. 로그인 정보는 현재 브라우저 탭을
+            닫으면 삭제됩니다.
+          </p>
+        </div>
+      </section>
+
+      <section id="manager" class="manager" aria-labelledby="manager-title" hidden>
+        <div class="manager-toolbar">
+          <div>
+            <p class="eyebrow">TEAM ACTIVITY</p>
+            <h2 id="manager-title">팀 활동</h2>
+          </div>
+          <div class="toolbar-actions">
+            <button id="refresh-button" class="button button--quiet" type="button">
+              새로고침
+            </button>
+            <button id="add-button" class="button button--primary" type="button">
+              새 활동 등록
+            </button>
+          </div>
+        </div>
+
+        <div class="team-switcher" aria-label="관리할 팀 선택">
+          <button
+            class="team-button is-active"
+            type="button"
+            data-team="stayup"
+            aria-pressed="true"
+          >
+            <span>Stay-Up</span>
+            <small id="stayup-count">0개</small>
+          </button>
+          <button
+            class="team-button"
+            type="button"
+            data-team="firehawks"
+            aria-pressed="false"
+          >
+            <span>FireHawks</span>
+            <small id="firehawks-count">0개</small>
+          </button>
+        </div>
+
+        <div class="list-heading">
+          <div>
+            <h3 id="selected-team-title">Stay-Up 활동 목록</h3>
+            <p id="activity-summary">활동을 불러오는 중입니다.</p>
+          </div>
+          <span class="privacy-chip">사진 위치정보 자동 제거</span>
+        </div>
+
+        <div id="activity-list" class="activity-list" aria-busy="false"></div>
+      </section>
+    </main>
+
+    <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title">
+      <form id="activity-form" class="editor-form">
+        <header class="editor-header">
+          <div>
+            <p id="editor-team-label" class="eyebrow">STAY-UP</p>
+            <h2 id="editor-title">새 활동 등록</h2>
+          </div>
+          <button id="close-editor-button" class="icon-button" type="button" aria-label="편집 창 닫기">
+            ×
+          </button>
+        </header>
+
+        <div
+          id="editor-status"
+          class="editor-status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          tabindex="-1"
+          hidden
+        ></div>
+
+        <fieldset id="editor-fields" class="editor-fields">
+          <input id="activity-team" name="team" type="hidden" />
+          <input id="activity-id" name="id" type="hidden" />
+
+          <div class="field-grid field-grid--two">
+            <label class="field">
+              <span>시작일 <strong aria-hidden="true">*</strong></span>
+              <input
+                id="activity-date"
+                name="date"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="2026-07-12"
+                pattern="\d{4}(-\d{2})?(-\d{2})?"
+                required
+              />
+              <small>YYYY, YYYY-MM 또는 YYYY-MM-DD</small>
+            </label>
+            <label class="field">
+              <span>종료일</span>
+              <input
+                id="activity-end-date"
+                name="endDate"
+                type="text"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="여러 날 진행한 경우"
+                pattern="\d{4}(-\d{2})?(-\d{2})?"
+              />
+            </label>
+          </div>
+
+          <div class="field-grid field-grid--two">
+            <label class="field">
+              <span>화면 표시 날짜</span>
+              <input
+                id="activity-display-date"
+                name="displayDate"
+                type="text"
+                maxlength="40"
+                placeholder="예: 2026년 상반기"
+              />
+              <small>비워두면 시작일과 종료일이 자동 표시됩니다.</small>
+            </label>
+            <label class="field">
+              <span>분류 <strong aria-hidden="true">*</strong></span>
+              <input
+                id="activity-category"
+                name="category"
+                type="text"
+                maxlength="60"
+                placeholder="예: 정기 훈련, 대회"
+                required
+              />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>제목 <strong aria-hidden="true">*</strong></span>
+            <input id="activity-title" name="title" type="text" maxlength="140" required />
+          </label>
+
+          <label class="field">
+            <span>설명 <strong aria-hidden="true">*</strong></span>
+            <textarea
+              id="activity-description"
+              name="description"
+              rows="5"
+              maxlength="600"
+              required
+            ></textarea>
+          </label>
+
+          <div class="field-grid field-grid--two">
+            <label class="field">
+              <span>강조 문구</span>
+              <input
+                id="activity-badge"
+                name="badge"
+                type="text"
+                maxlength="50"
+                placeholder="예: 대상, 우수상"
+              />
+            </label>
+            <label class="field">
+              <span>강조 문구 스타일</span>
+              <select id="activity-badge-tone" name="badgeTone">
+                <option value="default">기본</option>
+                <option value="muted">차분하게</option>
+              </select>
+            </label>
+          </div>
+
+          <section class="image-editor" aria-labelledby="image-editor-title">
+            <div class="image-editor__heading">
+              <div>
+                <h3 id="image-editor-title">대표 사진</h3>
+                <p>JPEG·PNG·WebP, 최대 15MB</p>
+              </div>
+              <span class="privacy-chip">EXIF·GPS 제거</span>
+            </div>
+
+            <label class="file-picker" for="activity-image">
+              <strong>사진 선택</strong>
+              <span>선택한 사진은 최대 1600px WebP로 변환된 뒤 저장됩니다.</span>
+              <input
+                id="activity-image"
+                name="image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+              />
+            </label>
+
+            <div id="image-preview-panel" class="image-preview-panel" hidden>
+              <img id="image-preview" alt="업로드할 대표 사진 미리보기" />
+              <p id="image-preview-details"></p>
+            </div>
+
+            <p id="image-help" class="image-help">
+              새 활동에는 사진이 필요합니다. 기존 활동은 새 사진을 선택하지 않으면 현재 사진을
+              유지합니다.
+            </p>
+          </section>
+
+          <label class="field">
+            <span>사진 설명 <strong aria-hidden="true">*</strong></span>
+            <input
+              id="activity-image-alt"
+              name="imageAlt"
+              type="text"
+              maxlength="180"
+              placeholder="사진 속 장소와 상황을 간결하게 설명하세요"
+              required
+            />
+            <small>사진을 볼 수 없는 사람도 장면을 이해할 수 있도록 작성합니다.</small>
+          </label>
+
+          <label class="publish-control">
+            <input id="activity-published" name="published" type="checkbox" checked />
+            <span>
+              <strong>사이트에 공개</strong>
+              <small>끄면 기록은 보존되고 사이트에서만 숨겨집니다.</small>
+            </span>
+          </label>
+        </fieldset>
+
+        <footer class="editor-footer">
+          <button id="cancel-editor-button" class="button button--quiet" type="button">
+            취소
+          </button>
+          <button id="save-button" class="button button--primary" type="submit">
+            저장하고 게시
+          </button>
+        </footer>
+      </form>
+    </dialog>
+  </body>
+</html>

@@ -675,7 +675,7 @@ span.project-description {
     .site-nav {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 4px;
         border-top: 1px solid rgba(255, 255, 255, 0.13);
         padding-top: 7px;

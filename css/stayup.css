@@ -590,6 +590,19 @@ dd {
     background: var(--white);
 }
 
+.activities .section-link {
+    display: inline-flex;
+    margin-left: 0.35rem;
+    color: var(--blue-700);
+    font-weight: 800;
+    text-underline-offset: 0.22em;
+}
+
+.activities .section-link:hover,
+.activities .section-link:focus-visible {
+    color: var(--navy-900);
+}
+
 .activities-grid {
     display: grid;
     grid-template-columns: 1.25fr 0.75fr;

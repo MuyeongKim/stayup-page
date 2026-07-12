@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체 활동 기록 | Stay Up World</title>
+    <meta name="description" content="전북소방드론팀 Stay-Up의 재난 대응·훈련 활동과 드론축구팀 FireHawks의 대회 기록을 연도와 팀별로 확인하세요.">
+    <link rel="canonical" href="https://www.stayup-ai.com/activities/">
+    <meta name="theme-color" content="#071d35">
+
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Stay Up World">
+    <meta property="og:title" content="전체 활동 기록 | Stay Up World">
+    <meta property="og:description" content="Stay-Up과 FireHawks의 현장 활동, 훈련과 대회 기록을 한곳에서 확인하세요.">
+    <meta property="og:url" content="https://www.stayup-ai.com/activities/">
+    <meta property="og:image" content="https://www.stayup-ai.com/images/optimized/slide4.webp">
+    <meta property="og:image:width" content="1600">
+    <meta property="og:image:height" content="1199">
+    <meta property="og:image:alt" content="전북소방 드론전문팀 Stay-Up 정기훈련 현장">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="전체 활동 기록 | Stay Up World">
+    <meta name="twitter:description" content="Stay-Up과 FireHawks의 현장 활동, 훈련과 대회 기록을 한곳에서 확인하세요.">
+    <meta name="twitter:image" content="https://www.stayup-ai.com/images/optimized/slide4.webp">
+    <meta name="twitter:image:alt" content="전북소방 드론전문팀 Stay-Up 정기훈련 현장">
+
+    <link rel="icon" href="/images/optimized/stayup-symbol.webp" type="image/webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700;800&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/activities.css">
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">본문 바로가기</a>
+
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="site-brand" href="/" aria-label="Stay Up World 홈">
+                <span class="brand-mark" aria-hidden="true">SU</span>
+                <span class="brand-copy">
+                    <strong>Stay Up World</strong>
+                    <span>전북소방 드론 활동 통합 포털</span>
+                </span>
+            </a>
+
+            <nav class="site-nav" aria-label="주요 메뉴">
+                <a href="/">포털 홈</a>
+                <a href="/stayup/stayup-landing.html">Stay-Up</a>
+                <a href="/firehawks/firehawks-landing.html">FireHawks</a>
+                <a href="/activities/" aria-current="page">전체 활동</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+        <section class="archive-hero" aria-labelledby="page-title">
+            <div class="shell hero-grid">
+                <div class="hero-copy">
+                    <p class="eyebrow">ACTIVITY ARCHIVE</p>
+                    <h1 id="page-title">두 팀이 쌓아온<br>모든 활동의 기록</h1>
+                    <p>재난 현장의 드론 운용과 훈련, 경기장에서 이어진 도전까지 Stay-Up과 FireHawks의 발자취를 모았습니다.</p>
+                </div>
+                <aside class="hero-summary" aria-label="활동 기록 안내">
+                    <span class="summary-label">ARCHIVE INDEX</span>
+                    <strong id="total-activity-count" aria-live="polite">—</strong>
+                    <span>공개 활동 기록</span>
+                    <div class="summary-teams" aria-hidden="true">
+                        <span>Stay-Up</span>
+                        <span>FireHawks</span>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="archive-section" aria-labelledby="archive-title">
+            <div class="shell">
+                <div class="archive-heading">
+                    <div>
+                        <p class="section-kicker">FIELD &amp; COMPETITION</p>
+                        <h2 id="archive-title">활동 기록 찾아보기</h2>
+                    </div>
+                    <p>팀과 연도를 선택해 원하는 기록을 빠르게 확인할 수 있습니다.</p>
+                </div>
+
+                <div class="filter-panel" aria-label="활동 기록 필터">
+                    <fieldset class="team-filter">
+                        <legend>팀 선택</legend>
+                        <div class="filter-buttons">
+                            <button type="button" class="filter-button is-active" data-team-filter="all" aria-pressed="true" aria-controls="activities-grid">전체</button>
+                            <button type="button" class="filter-button filter-button-stayup" data-team-filter="stayup" aria-pressed="false" aria-controls="activities-grid">Stay-Up</button>
+                            <button type="button" class="filter-button filter-button-firehawks" data-team-filter="firehawks" aria-pressed="false" aria-controls="activities-grid">FireHawks</button>
+                        </div>
+                    </fieldset>
+
+                    <div class="year-filter">
+                        <label for="year-filter">연도</label>
+                        <select id="year-filter" aria-controls="activities-grid">
+                            <option value="all">전체 연도</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="result-bar">
+                    <p id="result-count" role="status" aria-live="polite" aria-atomic="true">활동 기록을 준비하고 있습니다.</p>
+                    <span aria-hidden="true">NEWEST FIRST</span>
+                </div>
+
+                <div id="loading-state" class="state-panel loading-panel" role="status">
+                    <span class="loading-indicator" aria-hidden="true"></span>
+                    <p>활동 기록을 불러오는 중입니다.</p>
+                </div>
+
+                <div id="error-state" class="state-panel error-panel" role="alert" hidden>
+                    <strong>활동 기록을 불러오지 못했습니다.</strong>
+                    <p>잠시 후 다시 시도해 주세요. 팀 소개 페이지의 기존 활동은 계속 확인할 수 있습니다.</p>
+                    <button id="retry-button" type="button">다시 불러오기</button>
+                </div>
+
+                <p id="partial-warning" class="partial-warning" role="status" hidden>일부 기록을 확인하지 못해 유효한 활동만 표시합니다.</p>
+
+                <div id="activities-grid" class="activities-grid" aria-busy="true"></div>
+
+                <div id="empty-state" class="state-panel empty-panel" role="status" hidden>
+                    <strong>조건에 맞는 활동이 없습니다.</strong>
+                    <p>다른 팀이나 연도를 선택해 주세요.</p>
+                </div>
+
+                <noscript>
+                    <div class="state-panel noscript-panel">
+                        <strong>활동 기록을 보려면 JavaScript가 필요합니다.</strong>
+                        <p><a href="/stayup/stayup-landing.html#activities">Stay-Up 활동</a> 또는 <a href="/firehawks/firehawks-landing.html#records">FireHawks 기록</a>을 확인해 주세요.</p>
+                    </div>
+                </noscript>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="shell footer-inner">
+            <div>
+                <strong>Stay Up World</strong>
+                <p>전북소방 드론 활동 통합 포털</p>
+            </div>
+            <nav aria-label="하단 메뉴">
+                <a href="/">포털 홈</a>
+                <a href="/stayup/stayup-landing.html">Stay-Up</a>
+                <a href="/firehawks/firehawks-landing.html">FireHawks</a>
+            </nav>
+            <p class="copyright">© <span data-current-year>2026</span> 전북소방드론팀 Stay-Up.</p>
+        </div>
+    </footer>
+
+    <script src="/js/activities.js"></script>
+</body>
+</html>
