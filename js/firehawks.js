@@ -3,10 +3,12 @@
  * Navigation behavior is shared through common.js.
  */
 
-function createFireHawksRecordCard(activity, isFeatured) {
+function createFireHawksRecordCard(activity) {
     const article = document.createElement('article');
-    article.className = isFeatured ? 'record-card record-card-featured' : 'record-card';
+    const titleId = `firehawks-record-title-${activity.id}`;
+    article.className = 'record-card';
     article.dataset.activityId = activity.id;
+    article.setAttribute('aria-labelledby', titleId);
 
     const imageContainer = document.createElement('div');
     imageContainer.className = 'record-image';
@@ -35,6 +37,7 @@ function createFireHawksRecordCard(activity, isFeatured) {
     time.textContent = window.ActivityDataStore.getDateLabel(activity);
 
     const title = document.createElement('h3');
+    title.id = titleId;
     title.textContent = activity.title;
 
     const description = document.createElement('p');
@@ -63,21 +66,21 @@ async function initFireHawksRecords() {
         return;
     }
 
-    const configuredLimit = Number.parseInt(container.dataset.activityLimit, 10);
-    const limit = Number.isInteger(configuredLimit) && configuredLimit > 0 ? configuredLimit : 3;
-
     try {
         const activities = await window.ActivityDataStore.loadActivities('/data/firehawks-activities.json', 'firehawks');
-        const latestActivities = activities.slice(0, limit);
+        const configuredLimit = Number.parseInt(container.dataset.activityLimit, 10);
+        const visibleActivities = Number.isInteger(configuredLimit) && configuredLimit > 0
+            ? activities.slice(0, configuredLimit)
+            : activities;
 
-        if (latestActivities.length === 0) {
+        if (visibleActivities.length === 0) {
             showFireHawksRecordStatus(container, '현재 게시된 대회 기록이 없습니다.', 'empty');
             return;
         }
 
         const fragment = document.createDocumentFragment();
-        latestActivities.forEach((activity, index) => {
-            fragment.append(createFireHawksRecordCard(activity, index === 0));
+        visibleActivities.forEach((activity) => {
+            fragment.append(createFireHawksRecordCard(activity));
         });
 
         container.replaceChildren(fragment);

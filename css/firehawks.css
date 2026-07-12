@@ -372,42 +372,38 @@ img {
 
 .records-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 22px;
 }
 
 .record-card {
+    display: flex;
+    flex-direction: column;
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 22px;
     background: var(--surface);
     box-shadow: 0 14px 44px rgba(0, 0, 0, 0.14);
-}
-
-.record-card-featured {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1.35fr 0.65fr;
+    height: 100%;
 }
 
 .record-image {
     position: relative;
-    min-height: 270px;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
     background: var(--surface-strong);
 }
 
 .record-image img {
+    display: block;
     width: 100%;
     height: 100%;
-    min-height: 270px;
     object-fit: cover;
 }
 
-.record-card-featured .record-image,
-.record-card-featured .record-image img {
-    min-height: 410px;
+.record-card[data-activity-id="yanggu-drone-festival-2025"] .record-image img {
+    object-position: center 60%;
 }
 
 .record-badge {
@@ -428,14 +424,8 @@ img {
 }
 
 .record-body {
+    flex: 1;
     padding: 26px 28px 30px;
-}
-
-.record-card-featured .record-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 42px;
 }
 
 .record-body time {
@@ -649,6 +639,10 @@ img {
 }
 
 @media (max-width: 1040px) {
+    .records-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .players-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -702,15 +696,6 @@ img {
 
     .hero-copy {
         max-width: 650px;
-    }
-
-    .record-card-featured {
-        grid-template-columns: 1fr;
-    }
-
-    .record-card-featured .record-image,
-    .record-card-featured .record-image img {
-        min-height: 330px;
     }
 
     .story-grid {
@@ -797,19 +782,6 @@ img {
         grid-template-columns: 1fr;
     }
 
-    .record-card-featured {
-        grid-column: auto;
-        display: block;
-    }
-
-    .record-image,
-    .record-image img,
-    .record-card-featured .record-image,
-    .record-card-featured .record-image img {
-        min-height: 230px;
-    }
-
-    .record-card-featured .record-body,
     .record-body {
         padding: 23px 22px 26px;
     }

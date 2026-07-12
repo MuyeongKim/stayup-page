@@ -162,6 +162,7 @@
         const article = document.createElement('article');
         const titleId = `activity-title-${activity.team}-${activity.id}`;
         article.className = `activity-card ${team.className}`;
+        article.dataset.activityId = activity.id;
         article.setAttribute('aria-labelledby', titleId);
 
         const media = document.createElement('div');

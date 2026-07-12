@@ -159,20 +159,20 @@ async function initStayUpActivities() {
         return;
     }
 
-    const configuredLimit = Number.parseInt(container.dataset.activityLimit, 10);
-    const limit = Number.isInteger(configuredLimit) && configuredLimit > 0 ? configuredLimit : 3;
-
     try {
         const activities = await window.ActivityDataStore.loadActivities('/data/stayup-activities.json', 'stayup');
-        const latestActivities = activities.slice(0, limit);
+        const configuredLimit = Number.parseInt(container.dataset.activityLimit, 10);
+        const visibleActivities = Number.isInteger(configuredLimit) && configuredLimit > 0
+            ? activities.slice(0, configuredLimit)
+            : activities;
 
-        if (latestActivities.length === 0) {
+        if (visibleActivities.length === 0) {
             showStayUpActivityStatus(container, '현재 게시된 활동 내역이 없습니다.', 'empty');
             return;
         }
 
         const fragment = document.createDocumentFragment();
-        latestActivities.forEach((activity, index) => {
+        visibleActivities.forEach((activity, index) => {
             fragment.append(createStayUpActivityCard(activity, index === 0));
         });
 
