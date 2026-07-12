@@ -92,6 +92,19 @@
       "imageHeight": 720,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20260224-yqu8k5",
+      "date": "2026-02-24",
+      "category": "정기훈련",
+      "title": "26년 2월 정기훈련",
+      "description": "충북소방 견학",
+      "image": "/images/activity-uploads/stayup-20260224-yqu8k5-mrh9j2dv.webp",
+      "imageAlt": "충북소방 견학",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 0,
+      "published": true
     }
   ]
 }
