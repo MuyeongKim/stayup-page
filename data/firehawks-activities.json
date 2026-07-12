@@ -84,6 +84,19 @@
       "imageHeight": 1200,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "firehawks-20251220-1mpb80j",
+      "date": "2025-12-20",
+      "category": "드론축구 대회",
+      "title": "협회장배 드론축구대회",
+      "description": "협회장배 드론축구대회",
+      "image": "/images/activity-uploads/firehawks-20251220-1mpb80j-mrh8wli8.webp",
+      "imageAlt": "협회장배 드론축구대회",
+      "imageWidth": 1400,
+      "imageHeight": 1050,
+      "order": 0,
+      "published": true
     }
   ]
 }
