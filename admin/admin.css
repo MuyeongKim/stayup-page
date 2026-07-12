@@ -40,6 +40,7 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   color: var(--ink-900);
   background:
@@ -618,10 +619,13 @@ fieldset:disabled button {
 
 .editor-dialog {
   width: min(48rem, calc(100% - 2rem));
-  max-height: min(92vh, 58rem);
+  height: min(58rem, calc(100vh - 2rem));
+  height: min(58rem, calc(100dvh - 2rem));
+  max-height: none;
   margin: auto;
   padding: 0;
   overflow: hidden;
+  overscroll-behavior: contain;
   border: 0;
   border-radius: var(--radius-lg);
   color: var(--ink-900);
@@ -635,9 +639,11 @@ fieldset:disabled button {
 }
 
 .editor-form {
-  display: flex;
-  max-height: min(92vh, 58rem);
-  flex-direction: column;
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
 }
 
 .editor-header,
@@ -651,10 +657,12 @@ fieldset:disabled button {
 }
 
 .editor-header {
+  grid-row: 1;
   border-bottom: 1px solid var(--line);
 }
 
 .editor-status {
+  grid-row: 2;
   flex: 0 0 auto;
   margin: 0.85rem 1.4rem 0;
   padding: 0.72rem 0.85rem;
@@ -712,12 +720,19 @@ fieldset:disabled button {
 
 .editor-fields {
   display: grid;
+  grid-row: 3;
+  min-height: 0;
   min-width: 0;
   margin: 0;
   padding: 1.4rem;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   border: 0;
   gap: 1.15rem;
+  overscroll-behavior: contain;
+  scroll-padding-block: 1rem;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
 }
 
 .field-grid {
@@ -901,6 +916,8 @@ fieldset:disabled button {
 }
 
 .editor-footer {
+  grid-row: 4;
+  padding-bottom: max(1.15rem, env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: var(--surface-soft);
   justify-content: flex-end;
@@ -1014,12 +1031,15 @@ fieldset:disabled button {
 
   .editor-dialog {
     width: calc(100% - 0.75rem);
-    max-height: calc(100vh - 0.75rem);
+    height: calc(100vh - 0.75rem);
+    height: calc(100dvh - 0.75rem);
+    max-height: none;
     border-radius: 1rem;
   }
 
   .editor-form {
-    max-height: calc(100vh - 0.75rem);
+    height: 100%;
+    max-height: none;
   }
 
   .editor-header,
@@ -1030,6 +1050,10 @@ fieldset:disabled button {
 
   .editor-status {
     margin: 0.75rem 1rem 0;
+  }
+
+  .editor-footer {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
   .field-grid--two {

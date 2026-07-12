@@ -33,6 +33,7 @@ const state = {
   },
   selectedTeam: 'stayup',
   editingActivity: null,
+  editorInvoker: null,
   processedImage: null,
   previewObjectUrl: null,
   imageProcessVersion: 0,
@@ -755,9 +756,13 @@ function showImagePreview(src, details, alt) {
 
 function openEditor(activity = null) {
   if (state.busy || !state.manifests[state.selectedTeam]) return;
+  state.editorInvoker = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null;
   clearProcessedImage();
   clearEditorStatus();
   elements.activityForm.reset();
+  elements.editorFields.scrollTop = 0;
   state.editingActivity = activity ? { ...activity } : null;
 
   const team = state.selectedTeam;
@@ -794,11 +799,18 @@ function openEditor(activity = null) {
   } else {
     elements.editorDialog.setAttribute('open', '');
   }
-  window.setTimeout(() => elements.activityDate.focus(), 0);
+  const avoidOpeningKeyboard = window.matchMedia('(pointer: coarse)').matches
+    || window.innerWidth <= 820;
+  window.setTimeout(() => {
+    elements.editorFields.scrollTop = 0;
+    (avoidOpeningKeyboard ? elements.closeEditorButton : elements.activityDate).focus();
+  }, 0);
 }
 
 function closeEditor() {
   if (elements.editorFields.disabled) return;
+  const invoker = state.editorInvoker;
+  state.editorInvoker = null;
   if (elements.editorDialog.open && typeof elements.editorDialog.close === 'function') {
     elements.editorDialog.close();
   } else {
@@ -807,6 +819,13 @@ function closeEditor() {
   state.editingActivity = null;
   clearProcessedImage();
   clearEditorStatus();
+  window.setTimeout(() => {
+    if (invoker?.isConnected) {
+      invoker.focus();
+    } else if (!elements.manager.hidden) {
+      elements.addButton.focus();
+    }
+  }, 0);
 }
 
 async function decodeImage(file) {
@@ -1251,8 +1270,8 @@ elements.teamButtons.forEach(button => {
 elements.closeEditorButton.addEventListener('click', closeEditor);
 elements.cancelEditorButton.addEventListener('click', closeEditor);
 elements.editorDialog.addEventListener('cancel', event => {
+  event.preventDefault();
   if (elements.editorFields.disabled) {
-    event.preventDefault();
     return;
   }
   closeEditor();
