@@ -32,7 +32,7 @@
     },
     {
       "id": "yanggu-drone-festival-2025",
-      "date": "2025-07",
+      "date": "2025-07-19",
       "category": "드론축구 대회",
       "title": "청춘양구 민군 드론 페스티벌",
       "description": "강원 양구에서 열린 민군 드론 페스티벌에 참가해 전국 팀들과 경쟁했습니다.",
@@ -40,9 +40,8 @@
       "imageAlt": "청춘양구 민군 드론 페스티벌 참가 현장",
       "imageWidth": 1200,
       "imageHeight": 1600,
-      "order": 3,
-      "published": true,
-      "displayDate": "2025"
+      "order": 0,
+      "published": true
     },
     {
       "id": "jeonju-mayors-cup-2024",
