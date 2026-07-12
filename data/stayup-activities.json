@@ -40,6 +40,19 @@
       "imageHeight": 1200,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20251028-1e36p3p",
+      "date": "2025-10-28",
+      "category": "정기훈련",
+      "title": "25년 10월 정기훈련",
+      "description": "구봉산 일대",
+      "image": "/images/activity-uploads/stayup-20251028-1e36p3p-mrh95b8l.webp",
+      "imageAlt": "25년 10월 정기훈련",
+      "imageWidth": 1600,
+      "imageHeight": 901,
+      "order": 0,
+      "published": true
     }
   ]
 }
