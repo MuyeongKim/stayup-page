@@ -97,6 +97,19 @@
       "imageHeight": 1050,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "firehawks-20260425-1i1wycl",
+      "date": "2026-04-25",
+      "category": "드론축구 대회",
+      "title": "2026 드론싸커 페스티벌",
+      "description": "2026 드론싸커 페스티벌 전국 챌린저스 대회",
+      "image": "/images/activity-uploads/firehawks-20260425-1i1wycl-mrh92zt1.webp",
+      "imageAlt": "2026 드론싸커 페스티벌",
+      "imageWidth": 1600,
+      "imageHeight": 1200,
+      "order": 0,
+      "published": true
     }
   ]
 }
