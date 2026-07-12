@@ -171,6 +171,19 @@
       "order": 0,
       "published": true,
       "endDate": "2026-06-19"
+    },
+    {
+      "id": "stayup-20260626-1235ylt",
+      "date": "2026-06-26",
+      "category": "정기훈련",
+      "title": "26년 6월 정기훈련",
+      "description": "충북 영동 터널방제센터",
+      "image": "/images/activity-uploads/stayup-20260626-1235ylt-mrha8k8x.webp",
+      "imageAlt": "6월 터널 훈련",
+      "imageWidth": 1600,
+      "imageHeight": 1182,
+      "order": 0,
+      "published": true
     }
   ]
 }
