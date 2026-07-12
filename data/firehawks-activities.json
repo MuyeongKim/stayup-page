@@ -3,7 +3,7 @@
   "activities": [
     {
       "id": "drone-world-cup-2025",
-      "date": "2025",
+      "date": "2025-09-26",
       "category": "드론축구 대회",
       "title": "2025 드론 월드컵",
       "description": "전주에서 열린 드론 월드컵에 참가해 파이어호크스의 첫 승을 기록했습니다.",
@@ -11,9 +11,8 @@
       "imageAlt": "2025 드론 월드컵에 참가한 파이어호크스",
       "imageWidth": 1600,
       "imageHeight": 1349,
-      "order": 5,
+      "order": 0,
       "published": true,
-      "displayDate": "2025",
       "badge": "팀 최초 1승",
       "badgeTone": "default"
     },
