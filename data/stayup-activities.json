@@ -53,6 +53,19 @@
       "imageHeight": 901,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20251201-mc197o",
+      "date": "2025-12-01",
+      "category": "회의",
+      "title": "25년 연말회의",
+      "description": "StayUp 연말회의",
+      "image": "/images/activity-uploads/stayup-20251201-mc197o-mrh99gyf.webp",
+      "imageAlt": "25년 연말회의",
+      "imageWidth": 1400,
+      "imageHeight": 1050,
+      "order": 0,
+      "published": true
     }
   ]
 }
