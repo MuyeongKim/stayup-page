@@ -184,6 +184,19 @@
       "imageHeight": 1182,
       "order": 0,
       "published": true
+    },
+    {
+      "id": "stayup-20260820-1cmywag",
+      "date": "2026-08-20",
+      "category": "수색동원",
+      "title": "완주 봉동일대 실종자수색",
+      "description": "완주 봉동일대 실종자수색",
+      "image": "/images/activity-uploads/stayup-20260820-1cmywag-mt5dr94n.webp",
+      "imageAlt": "드론수색 및 맵핑확인",
+      "imageWidth": 960,
+      "imageHeight": 720,
+      "order": 0,
+      "published": true
     }
   ]
 }
