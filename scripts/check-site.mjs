@@ -79,6 +79,55 @@ async function checkHtml(filePath) {
     if (targetStats?.isDirectory()) target = path.join(target, 'index.html');
     assert(await pathExists(target), `${relativeName} references missing file: ${reference}`);
   }
+
+  if (relativeName === 'index.html') {
+    assert(/class="hero-field"/.test(html), 'index.html must lead with a real field image.');
+    assert(!/portal-directory/.test(html), 'index.html must not keep the non-interactive portal directory.');
+    assert(/id="latest-activities"/.test(html), 'index.html must include the latest activities section.');
+    assert(/id="latest-activities-list"/.test(html), 'index.html must expose a latest activities render target.');
+    assert(/class="service-grid"/.test(html), 'index.html must separate available services from the roadmap.');
+    assert((html.match(/class="service-card/g) || []).length === 1,
+      'index.html must expose only the verified available service.');
+    assert(!html.includes('https://www.stayup-ai.com/rfid-read'),
+      'index.html must not link to the unavailable RFID route.');
+    assert(/class="project-roadmap"/.test(html), 'index.html must include a compact project roadmap.');
+    assert(/class="roadmap-code"[^>]*>RFID<\/span>/.test(html),
+      'index.html must describe the unavailable RFID service as roadmap work.');
+    assert(/<nav class="footer-nav"/.test(html), 'index.html footer must include navigation links.');
+
+    const versionedAssets = [
+      'css/style.css',
+      'js/activity-data.js',
+      'js/home-activity-helpers.js',
+      'js/main.js'
+    ].map((asset) => html.match(new RegExp(`(?:href|src)="${asset.replace('.', '\\.')}\\?v=([0-9]{8,12})"`)));
+    assert(versionedAssets.every(Boolean), 'index.html must version its core CSS and JavaScript assets.');
+    assert(new Set(versionedAssets.map((match) => match[1])).size === 1,
+      'index.html core assets must share one version identifier.');
+    const assetVersion = versionedAssets[0][1];
+    const mainSource = await readFile(path.join(rootDir, 'js', 'main.js'), 'utf8');
+    assert(mainSource.includes(`from './home-activity-helpers.js?v=${assetVersion}'`),
+      'main.js must import the activity helpers with the current asset version.');
+
+    const activityDataScript = versionedAssets[1].index;
+    const activityHelpersScript = versionedAssets[2].index;
+    const mainScript = versionedAssets[3].index;
+    assert(activityDataScript !== -1 && activityHelpersScript !== -1
+      && activityDataScript < activityHelpersScript && activityHelpersScript < mainScript,
+    'index.html must load activity data and helpers before main.js.');
+  }
+}
+
+async function checkMainStyles() {
+  const css = await readFile(path.join(rootDir, 'css', 'style.css'), 'utf8');
+  assert(/\.service-icon\s*\{[^}]*justify-self:\s*start;/s.test(css),
+    'Mobile service icons must preserve their compact width instead of stretching.');
+  assert(!/scroll-margin-top\s*:/.test(css),
+    'Section anchors must not add scroll margin on top of the document scroll padding.');
+  assert(/:focus-visible\s*\{[^}]*outline:\s*3px solid #ffffff;[^}]*box-shadow:\s*0 0 0 6px #8a3500;/s.test(css),
+    'Keyboard focus must use a two-tone ring that remains visible on light and dark surfaces.');
+  assert(/\.latest-activity-card:focus-within\s*\{[^}]*outline:\s*3px solid #ffffff;[^}]*box-shadow:\s*0 0 0 6px #8a3500,/s.test(css),
+    'Activity card focus must be drawn on the unclipped parent card boundary.');
 }
 
 async function main() {
@@ -95,6 +144,7 @@ async function main() {
 
   const htmlFiles = await collectFiles(rootDir, new Set(['.html']));
   for (const htmlFile of htmlFiles) await checkHtml(htmlFile);
+  await checkMainStyles();
 }
 
 main().catch((error) => {

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run check && node scripts/build.mjs && node scripts/check-dist.mjs",
-    "check": "node scripts/check-site.mjs && node scripts/test-oauth.mjs"
+    "check": "node scripts/check-site.mjs && node scripts/test-home-activities.mjs && node scripts/test-oauth.mjs"
   },
   "engines": {
     "node": ">=20"
