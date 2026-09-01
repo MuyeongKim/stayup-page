@@ -8,6 +8,7 @@
     --ink: #102131;
     --accent: #ff7147;
     --accent-strong: #f0522f;
+    --accent-on-light: #bd4527;
     --accent-soft: #ffb18f;
     --line: rgba(255, 255, 255, 0.12);
     --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
@@ -48,7 +49,6 @@ dd {
     text-wrap: pretty;
 }
 
-body,
 button,
 a {
     font: inherit;
@@ -489,7 +489,7 @@ img {
 }
 
 .story-copy .eyebrow {
-    color: var(--accent-strong);
+    color: var(--accent-on-light);
 }
 
 .story-copy > p:not(.eyebrow) {
@@ -576,11 +576,9 @@ img {
 
 .player-card p {
     margin: 2px 0 0;
-    overflow: hidden;
     color: var(--muted);
     font-size: 0.78rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .schedule-section {

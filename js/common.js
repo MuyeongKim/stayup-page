@@ -17,6 +17,10 @@ function initSmoothScroll() {
                 behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
                 block: 'start'
             });
+
+            if (anchor.classList.contains('skip-link')) {
+                target.focus({ preventScroll: true });
+            }
         });
     });
 }

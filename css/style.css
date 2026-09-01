@@ -1082,14 +1082,14 @@ a {
         width: 100%;
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 4px;
+        gap: 8px;
         border-top: 1px solid rgba(255, 255, 255, 0.13);
         padding-top: 5px;
     }
 
     .site-nav a {
-        min-height: 34px;
-        padding: 0 6px;
+        min-height: 44px;
+        padding: 0 8px;
         justify-content: center;
         font-size: 0.76rem;
     }

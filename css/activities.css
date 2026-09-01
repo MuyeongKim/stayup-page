@@ -6,6 +6,7 @@
     --blue-600: #1269c7;
     --blue-100: #dceeff;
     --orange-600: #e45b34;
+    --orange-700: #bd4527;
     --ink: #142233;
     --muted: #5d6b7a;
     --line: #dbe4ec;
@@ -30,7 +31,7 @@ body {
 }
 h1, h2, h3, h4 { text-wrap: balance; }
 p, li, dd { text-wrap: pretty; }
-body, button, select { font: inherit; }
+button, select { font: inherit; }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
 button, select { color: inherit; }
@@ -52,7 +53,10 @@ h1, h2, h3, p, fieldset { margin-top: 0; }
     transform: translateY(-160%);
 }
 .skip-link:focus { transform: translateY(0); }
-:focus-visible { outline: 3px solid #f5a623; outline-offset: 4px; }
+:focus-visible { outline: 3px solid var(--navy-950); outline-offset: 4px; }
+.site-header :focus-visible,
+.archive-hero :focus-visible,
+.site-footer :focus-visible { outline-color: var(--white); }
 
 .site-header {
     position: sticky;
@@ -250,10 +254,10 @@ h1, h2, h3, p, fieldset { margin-top: 0; }
     font-weight: 700;
     cursor: pointer;
 }
-.filter-button:hover:not(:disabled) { border-color: #9fb6ca; background: #f6f9fb; }
+.filter-button:not(.is-active):hover:not(:disabled) { border-color: #9fb6ca; background: #f6f9fb; }
 .filter-button.is-active { border-color: var(--navy-900); color: var(--white); background: var(--navy-900); }
 .filter-button-stayup.is-active { border-color: var(--blue-600); background: var(--blue-600); }
-.filter-button-firehawks.is-active { border-color: var(--orange-600); background: var(--orange-600); }
+.filter-button-firehawks.is-active { border-color: var(--orange-700); background: var(--orange-700); }
 .filter-button:disabled, .year-filter select:disabled { cursor: wait; opacity: .62; }
 .year-filter { width: 190px; flex: 0 0 auto; }
 .year-filter select {
@@ -289,9 +293,7 @@ h1, h2, h3, p, fieldset { margin-top: 0; }
     border-radius: 18px;
     background: var(--white);
     box-shadow: var(--shadow-sm);
-    transition: transform 180ms ease, box-shadow 180ms ease;
 }
-.activity-card:hover { transform: translateY(-4px); box-shadow: 0 18px 45px rgba(7,29,53,.13); }
 .activity-card.team-firehawks { border-top-color: var(--orange-600); }
 .activity-media { position: relative; aspect-ratio: 16/10; overflow: hidden; background: #dfe7ee; }
 .activity-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom,rgba(2,12,22,.18),transparent 45%,rgba(2,12,22,.16)); }
@@ -376,8 +378,16 @@ h1, h2, h3, p, fieldset { margin-top: 0; }
     .shell { width: min(100% - 28px,1180px); }
     .brand-copy span { display: none; }
     .site-nav a { padding-inline: 11px; font-size: .82rem; }
+    .hero-grid { gap: 20px; padding-block: 36px; }
     .hero-copy h1 { font-size: clamp(2.35rem,13vw,3.7rem); }
     .hero-copy h1 br { display: none; }
+    .hero-summary { display: flex; align-items: center; gap: 12px; padding: 16px 18px; }
+    .summary-label, .summary-teams { display: none; }
+    .hero-summary > strong { margin-top: 0; font-size: 2.25rem; }
+    .hero-summary > span:nth-of-type(2) { margin-top: 0; }
+    .archive-section { padding-block: 28px 84px; }
+    .archive-heading { gap: 12px; margin-bottom: 18px; }
+    .archive-heading > p { margin-bottom: 0; }
     .archive-heading h2 { font-size: 2.15rem; }
     .filter-panel { padding: 18px; }
     .filter-buttons { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }

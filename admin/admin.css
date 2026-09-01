@@ -8,7 +8,7 @@
   --blue-100: #e8f2ff;
   --ink-900: #142033;
   --ink-700: #40516a;
-  --ink-500: #697991;
+  --ink-500: #5d6e86;
   --line: #dbe3ed;
   --line-strong: #c7d2e0;
   --surface: #ffffff;
@@ -100,8 +100,12 @@ fieldset:disabled button {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(31, 107, 193, 0.34);
+  outline: 3px solid var(--blue-700);
   outline-offset: 3px;
+}
+
+.page-header :focus-visible {
+  outline-color: #fff;
 }
 
 .skip-link {
@@ -928,7 +932,6 @@ fieldset:disabled button {
 .field select:focus {
   border-color: var(--blue-600);
   box-shadow: 0 0 0 3px rgba(31, 107, 193, 0.12);
-  outline: none;
 }
 
 .image-editor {

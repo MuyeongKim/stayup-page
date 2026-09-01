@@ -106,8 +106,14 @@ dd {
 }
 
 :focus-visible {
-    outline: 3px solid #f5b800;
+    outline: 3px solid var(--navy-900);
     outline-offset: 4px;
+}
+
+.hero :focus-visible,
+.vision-contact :focus-visible,
+.footer :focus-visible {
+    outline-color: var(--white);
 }
 
 /* Header */
@@ -451,6 +457,7 @@ dd {
 
 .stat-item dd {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 5px;
     margin-bottom: 4px;
@@ -704,7 +711,7 @@ dd {
 
 .leader-card {
     display: grid;
-    grid-template-columns: 180px 1fr;
+    grid-template-columns: 180px minmax(0, 1fr);
     align-items: center;
     gap: 28px;
     min-height: 240px;
@@ -712,6 +719,10 @@ dd {
     border: 1px solid #c9dceb;
     border-radius: var(--radius-md);
     background: var(--white);
+}
+
+.leader-card > div {
+    min-width: 0;
 }
 
 .leader-card img {
@@ -1021,7 +1032,7 @@ dd {
     }
 
     .leader-card {
-        grid-template-columns: 140px 1fr;
+        grid-template-columns: 140px minmax(0, 1fr);
         gap: 22px;
     }
 
@@ -1180,7 +1191,7 @@ dd {
     }
 
     .leader-card {
-        grid-template-columns: 110px 1fr;
+        grid-template-columns: 110px minmax(0, 1fr);
         padding: 22px;
     }
 
@@ -1296,7 +1307,7 @@ dd {
     }
 
     .leader-card {
-        grid-template-columns: 88px 1fr;
+        grid-template-columns: 88px minmax(0, 1fr);
         gap: 16px;
         padding: 18px;
     }
