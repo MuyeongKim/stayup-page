@@ -31,7 +31,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700&amp;display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=2026082506">
+    <link rel="stylesheet" href="css/style.css?v=2026090201">
 </head>
 
 <body>
@@ -240,13 +240,34 @@
                     <a href="#projects">기술 서비스</a>
                 </div>
             </nav>
-            <p class="copyright">© <span id="currentYear">2026</span> 전북소방드론팀 Stay-Up.</p>
+            <div class="footer-meta">
+                <section class="visitor-overview" id="visitorOverview" data-state="unavailable"
+                    aria-labelledby="visitor-overview-title">
+                    <p class="visitor-label" id="visitor-overview-title">
+                        <span>방문 현황</span>
+                        <small>브라우저 기준 추정 · 2026.09부터</small>
+                    </p>
+                    <dl class="visitor-stats" id="visitorStats" aria-busy="false">
+                        <div>
+                            <dt>오늘</dt>
+                            <dd><span class="visitor-count" id="visitorToday">—</span></dd>
+                        </div>
+                        <div>
+                            <dt>누적</dt>
+                            <dd><span class="visitor-count" id="visitorTotal">—</span></dd>
+                        </div>
+                    </dl>
+                    <p class="visually-hidden" id="visitorStatus" role="status" aria-live="polite"
+                        aria-atomic="true">방문 현황을 불러오지 못했습니다.</p>
+                </section>
+                <p class="copyright">© <span id="currentYear">2026</span> 전북소방드론팀 Stay-Up.</p>
+            </div>
         </div>
     </footer>
 
-    <script src="js/activity-data.js?v=2026082506"></script>
-    <script type="module" src="js/home-activity-helpers.js?v=2026082506"></script>
-    <script type="module" src="js/main.js?v=2026082506"></script>
+    <script src="js/activity-data.js?v=2026090201"></script>
+    <script type="module" src="js/home-activity-helpers.js?v=2026090201"></script>
+    <script type="module" src="js/main.js?v=2026090201"></script>
 </body>
 
 </html>

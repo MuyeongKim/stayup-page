@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "build": "npm run check && node scripts/build.mjs && node scripts/check-dist.mjs",
-    "check": "node scripts/check-site.mjs && node scripts/test-home-activities.mjs && node scripts/test-oauth.mjs"
+    "check": "node scripts/check-site.mjs && node scripts/test-home-activities.mjs && node scripts/test-oauth.mjs && node scripts/test-visitors.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "@upstash/redis": "1.38.3",
     "sharp": "0.34.3"
   }
 }

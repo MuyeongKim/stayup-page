@@ -94,6 +94,15 @@ async function checkHtml(filePath) {
     assert(/class="roadmap-code"[^>]*>RFID<\/span>/.test(html),
       'index.html must describe the unavailable RFID service as roadmap work.');
     assert(/<nav class="footer-nav"/.test(html), 'index.html footer must include navigation links.');
+    assert(/id="visitorOverview"/.test(html), 'index.html footer must include the visitor overview.');
+    assert(/id="visitorOverview" data-state="unavailable"/.test(html),
+      'index.html visitor overview must fail safely when JavaScript does not run.');
+    assert(/id="visitorStats" aria-busy="false"/.test(html),
+      'index.html visitor overview must not claim indefinite loading before JavaScript runs.');
+    assert(/id="visitorToday"/.test(html) && /id="visitorTotal"/.test(html),
+      'index.html visitor overview must expose today and total count targets.');
+    assert(/브라우저 기준 추정 · 2026\.09부터/.test(html),
+      'index.html must disclose the visitor counter basis and starting month.');
 
     const versionedAssets = [
       'css/style.css',
@@ -128,6 +137,8 @@ async function checkMainStyles() {
     'Keyboard focus must use a two-tone ring that remains visible on light and dark surfaces.');
   assert(/\.latest-activity-card:focus-within\s*\{[^}]*outline:\s*3px solid #ffffff;[^}]*box-shadow:\s*0 0 0 6px #8a3500,/s.test(css),
     'Activity card focus must be drawn on the unclipped parent card boundary.');
+  assert(/\.visitor-count\s*\{[^}]*font-variant-numeric:\s*tabular-nums;/s.test(css),
+    'Visitor counts must use stable tabular numerals.');
 }
 
 async function main() {

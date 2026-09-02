@@ -1,4 +1,4 @@
-import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026082506';
+import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026090201';
 
 /**
  * Entry page enhancements.
@@ -36,6 +36,58 @@ function initHeaderState() {
 
     updateHeader();
     window.addEventListener('scroll', requestUpdate, { passive: true });
+}
+
+async function initVisitorOverview() {
+    const overview = document.getElementById('visitorOverview');
+    const stats = document.getElementById('visitorStats');
+    const today = document.getElementById('visitorToday');
+    const total = document.getElementById('visitorTotal');
+    const status = document.getElementById('visitorStatus');
+    if (!overview || !stats || !today || !total || !status) return;
+
+    overview.dataset.state = 'loading';
+    stats.setAttribute('aria-busy', 'true');
+    status.textContent = '방문 현황을 집계하는 중입니다.';
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 8000);
+
+    try {
+        const response = await fetch('/api/visitors', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+            credentials: 'same-origin',
+            cache: 'no-store',
+            signal: controller.signal
+        });
+        if (!response.ok) throw new Error('visitor_counter_unavailable');
+
+        const counts = await response.json();
+        if (
+            !Number.isSafeInteger(counts.today)
+            || !Number.isSafeInteger(counts.total)
+            || counts.today < 0
+            || counts.total < counts.today
+        ) {
+            throw new Error('invalid_visitor_counts');
+        }
+
+        const formatter = new Intl.NumberFormat('ko-KR');
+        today.textContent = formatter.format(counts.today);
+        total.textContent = formatter.format(counts.total);
+        overview.dataset.state = 'ready';
+        stats.setAttribute('aria-busy', 'false');
+        status.textContent = `오늘 방문 약 ${formatter.format(counts.today)}명, 누적 방문 약 ${formatter.format(counts.total)}명입니다. 브라우저 기준 추정치입니다.`;
+    } catch {
+        today.textContent = '—';
+        total.textContent = '—';
+        overview.dataset.state = 'unavailable';
+        stats.setAttribute('aria-busy', 'false');
+        status.textContent = '방문 현황을 불러오지 못했습니다.';
+    } finally {
+        window.clearTimeout(timeoutId);
+    }
 }
 
 function createLatestActivityCard(activity) {
@@ -153,4 +205,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setCurrentYear();
     initHeaderState();
     initLatestActivities();
+    initVisitorOverview();
 });

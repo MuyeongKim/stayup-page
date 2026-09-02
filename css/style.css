@@ -83,6 +83,18 @@ a {
     transform: translateY(0);
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .site-header {
     position: sticky;
     top: 0;
@@ -1007,8 +1019,82 @@ a {
     text-underline-offset: 4px;
 }
 
-.copyright {
+.footer-meta {
+    display: grid;
+    justify-items: end;
+    gap: 14px;
     text-align: right;
+}
+
+.visitor-overview {
+    min-height: 68px;
+    display: grid;
+    justify-items: end;
+    align-content: end;
+    gap: 3px;
+}
+
+.footer-meta .visitor-label {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 2px 8px;
+    color: #91bee2;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.visitor-label small {
+    color: #8fa5b7;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.visitor-stats {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 2px 14px;
+    color: #c8d6e2;
+    font-size: 0.82rem;
+}
+
+.visitor-stats > div {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+}
+
+.visitor-stats > div + div::before {
+    content: '·';
+    margin-right: 7px;
+    color: #6f879b;
+}
+
+.visitor-stats dt,
+.visitor-stats dd {
+    margin: 0;
+}
+
+.visitor-count {
+    min-width: 6ch;
+    display: inline-block;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    text-align: right;
+}
+
+.visitor-overview[data-state='unavailable'] .visitor-stats {
+    opacity: 0.72;
 }
 
 @media (max-width: 980px) {
@@ -1055,9 +1141,22 @@ a {
         align-items: start;
     }
 
-    .copyright {
+    .footer-meta {
         grid-column: 1 / -1;
+        justify-items: start;
         text-align: left;
+    }
+
+    .visitor-overview {
+        justify-items: start;
+    }
+
+    .footer-meta .visitor-label {
+        justify-content: flex-start;
+    }
+
+    .visitor-stats {
+        justify-content: flex-start;
     }
 }
 
@@ -1161,8 +1260,9 @@ a {
         gap: 30px;
     }
 
-    .copyright {
+    .footer-meta {
         grid-column: auto;
+        justify-items: start;
         text-align: left;
     }
 }
@@ -1240,6 +1340,10 @@ a {
 
     .footer-nav {
         gap: 28px;
+    }
+
+    .visitor-stats > div + div::before {
+        display: none;
     }
 }
 
