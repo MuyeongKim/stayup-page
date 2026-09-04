@@ -171,11 +171,21 @@ function getScheduleStatusLabel(schedule, today) {
 }
 
 function showScheduleStatus(container, message, state) {
+    container.querySelectorAll('.schedule-load-status').forEach((status) => status.remove());
     const status = document.createElement('p');
     status.className = 'schedule-load-status';
     status.setAttribute('role', state === 'error' ? 'alert' : 'status');
     status.textContent = message;
-    container.replaceChildren(status);
+    if (state === 'error') {
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'activity-retry-button';
+        retry.textContent = '일정 다시 불러오기';
+        retry.addEventListener('click', initFireHawksSchedule);
+        status.append(retry);
+    }
+    if (state === 'error' && container.querySelector('article')) container.append(status);
+    else container.replaceChildren(status);
     container.dataset.loadState = state;
     container.setAttribute('aria-busy', 'false');
 }
@@ -234,15 +244,13 @@ function createScheduleDetails(schedule, today) {
 async function initFireHawksSchedule() {
     const container = document.getElementById('firehawks-schedule-content');
     if (!container) return;
+    if (container.dataset.refreshPending === 'true') return;
+    if (!window.ActivityDataStore?.fetchJson) return;
 
+    container.dataset.refreshPending = 'true';
+    container.querySelector('.activity-retry-button')?.setAttribute('disabled', '');
     try {
-        const response = await fetch('/data/firehawks-schedules.json', {
-            cache: 'no-cache',
-            headers: { Accept: 'application/json' }
-        });
-        if (!response.ok) throw new Error(`출전 일정을 불러오지 못했습니다. (${response.status})`);
-
-        const schedules = validateScheduleManifest(await response.json());
+        const schedules = validateScheduleManifest(await window.ActivityDataStore.fetchJson('/data/firehawks-schedules.json'));
         const today = getKoreaToday();
         const nextSchedule = pickNextSchedule(schedules, today);
         if (!nextSchedule) {
@@ -262,7 +270,13 @@ async function initFireHawksSchedule() {
         container.setAttribute('aria-busy', 'false');
     } catch (error) {
         console.error('[FireHawks] 출전 일정을 표시하지 못했습니다.', error);
-        showScheduleStatus(container, '출전 일정을 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.', 'error');
+        const message = container.querySelector('article')
+            ? '최신 일정을 확인하지 못해 기존 등록 일정을 표시합니다.'
+            : '출전 일정을 불러오지 못했습니다.';
+        showScheduleStatus(container, message, 'error');
+    } finally {
+        container.dataset.refreshPending = 'false';
+        container.setAttribute('aria-busy', 'false');
     }
 }
 
@@ -271,6 +285,10 @@ function createFireHawksRecordCard(activity) {
     const titleId = `firehawks-record-title-${activity.id}`;
     article.className = 'record-card';
     article.dataset.activityId = activity.id;
+    article.dataset.team = 'firehawks';
+    article.dataset.date = activity.date;
+    article.dataset.endDate = activity.endDate || '';
+    article.dataset.order = activity.order;
     article.setAttribute('aria-labelledby', titleId);
 
     const imageContainer = document.createElement('div');
@@ -312,11 +330,21 @@ function createFireHawksRecordCard(activity) {
 }
 
 function showFireHawksRecordStatus(container, message, state) {
+    container.querySelectorAll('.record-load-status').forEach((status) => status.remove());
     const status = document.createElement('p');
     status.className = 'record-load-status';
     status.setAttribute('role', state === 'error' ? 'alert' : 'status');
     status.textContent = message;
-    container.replaceChildren(status);
+    if (state === 'error') {
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'activity-retry-button';
+        retry.textContent = '다시 불러오기';
+        retry.addEventListener('click', initFireHawksRecords);
+        status.append(retry);
+    }
+    if (container.querySelector('article') && (state === 'error' || state === 'warning')) container.append(status);
+    else container.replaceChildren(status);
     container.dataset.loadState = state;
     container.setAttribute('aria-busy', 'false');
 }
@@ -324,13 +352,17 @@ function showFireHawksRecordStatus(container, message, state) {
 async function initFireHawksRecords() {
     const container = document.getElementById('firehawks-records-list');
     if (!container) return;
+    if (container.dataset.refreshPending === 'true') return;
     if (!window.ActivityDataStore) {
         showFireHawksRecordStatus(container, '대회 기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'error');
         return;
     }
 
+    container.dataset.refreshPending = 'true';
+    container.querySelector('.activity-retry-button')?.setAttribute('disabled', '');
     try {
-        const activities = await window.ActivityDataStore.loadActivities('/data/firehawks-activities.json', 'firehawks');
+        const { activities, invalidCount } = await window.ActivityDataStore.loadActivitiesDetailed('/data/firehawks-activities.json', 'firehawks');
+        if (activities.length === 0 && invalidCount > 0) throw new Error('유효한 활동 기록이 없습니다.');
         const configuredLimit = Number.parseInt(container.dataset.activityLimit, 10);
         const visibleActivities = Number.isInteger(configuredLimit) && configuredLimit > 0
             ? activities.slice(0, configuredLimit)
@@ -349,9 +381,16 @@ async function initFireHawksRecords() {
         container.replaceChildren(fragment);
         container.dataset.loadState = 'ready';
         container.setAttribute('aria-busy', 'false');
+        if (invalidCount > 0) showFireHawksRecordStatus(container, `형식이 올바르지 않은 기록 ${invalidCount}건은 제외했습니다.`, 'warning');
     } catch (error) {
         console.error('[FireHawks] 대회 기록을 표시하지 못했습니다.', error);
-        showFireHawksRecordStatus(container, '대회 기록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', 'error');
+        const message = container.querySelector('article')
+            ? '최신 대회 기록을 확인하지 못해 기존 기록을 표시합니다.'
+            : '대회 기록을 불러오지 못했습니다.';
+        showFireHawksRecordStatus(container, message, 'error');
+    } finally {
+        container.dataset.refreshPending = 'false';
+        container.setAttribute('aria-busy', 'false');
     }
 }
 

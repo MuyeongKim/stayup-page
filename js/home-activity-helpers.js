@@ -93,6 +93,6 @@ export function createActivityViewModel(activity) {
         imageAlt: activity.imageAlt,
         imageWidth: activity.imageWidth,
         imageHeight: activity.imageHeight,
-        archiveHref: `/activities/?team=${activity.team}&year=${activity.date.slice(0, 4)}`
+        archiveHref: `/activities/?team=${activity.team}&year=${activity.date.slice(0, 4)}#activity-${activity.team}-${activity.id}`
     };
 }

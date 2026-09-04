@@ -29,7 +29,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700;800&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/stayup.css">
+    <link rel="stylesheet" href="../css/stayup.css?v=2026090501">
+    <link rel="stylesheet" href="/css/shared.css?v=2026090501">
 </head>
 
 <body>
@@ -54,11 +55,10 @@
                     <span aria-hidden="true"></span>
                 </button>
                 <ul class="nav-menu" id="primary-navigation">
+                    <li><a href="/">포털 홈</a></li>
                     <li><a href="/stayup/stayup-landing.html" aria-current="page">Stay-Up</a></li>
                     <li><a href="/firehawks/firehawks-landing.html">FireHawks</a></li>
-                    <li><a href="#missions">주요 임무</a></li>
-                    <li><a href="#activities">현장 활동</a></li>
-                    <li><a href="#members">대원 소개</a></li>
+                    <li><a href="/activities/">전체 활동</a></li>
                 </ul>
             </nav>
         </div>
@@ -153,7 +153,7 @@
                 <div class="activities-grid" id="stayup-activities-list" data-activity-limit="3" aria-busy="true">
                     <p class="activity-load-status" role="status">활동 내역을 불러오는 중입니다.</p>
                 </div>
-                <noscript><p>활동 내역을 보려면 브라우저에서 JavaScript를 활성화해 주세요.</p></noscript>
+                <noscript><p>마지막 배포 시점의 최근 활동입니다. <a href="/activities/">전체 활동 기록 보기</a></p></noscript>
             </div>
         </section>
 
@@ -267,14 +267,16 @@
             </div>
             <p>© 2023–현재 전북소방드론팀 Stay-Up. All rights reserved.</p>
             <nav aria-label="관련 사이트">
-                <a href="/">Stay Up World</a>
+                <a href="/">포털 홈</a>
                 <a href="/firehawks/firehawks-landing.html">FireHawks</a>
+                <a href="/activities/">전체 활동</a>
+                <a href="/#projects">기술 서비스</a>
             </nav>
         </div>
     </footer>
 
-    <script src="../js/common.js"></script>
-    <script src="../js/activity-data.js"></script>
-    <script src="../js/stayup.js"></script>
+    <script src="../js/common.js?v=2026090501"></script>
+    <script src="../js/activity-data.js?v=2026090501"></script>
+    <script src="../js/stayup.js?v=2026090501"></script>
 </body>
 </html>

@@ -35,8 +35,10 @@ const state = {
   scheduleManifest: null,
   selectedTeam: 'stayup',
   editingActivity: null,
+  activityConflict: null,
   editorInvoker: null,
   editingSchedule: null,
+  scheduleConflict: null,
   scheduleEditorInvoker: null,
   processedImage: null,
   previewObjectUrl: null,
@@ -67,6 +69,7 @@ const elements = {
   addScheduleButton: document.querySelector('#add-schedule-button'),
   editorDialog: document.querySelector('#editor-dialog'),
   editorStatus: document.querySelector('#editor-status'),
+  activityConflict: document.querySelector('#activity-conflict'),
   activityForm: document.querySelector('#activity-form'),
   editorFields: document.querySelector('#editor-fields'),
   editorTitle: document.querySelector('#editor-title'),
@@ -93,6 +96,7 @@ const elements = {
   imageHelp: document.querySelector('#image-help'),
   scheduleEditorDialog: document.querySelector('#schedule-editor-dialog'),
   scheduleEditorStatus: document.querySelector('#schedule-editor-status'),
+  scheduleConflict: document.querySelector('#schedule-conflict'),
   scheduleForm: document.querySelector('#schedule-form'),
   scheduleEditorFields: document.querySelector('#schedule-editor-fields'),
   scheduleEditorTitle: document.querySelector('#schedule-editor-title'),
@@ -109,6 +113,59 @@ const elements = {
   scheduleDescription: document.querySelector('#schedule-description'),
   schedulePublished: document.querySelector('#schedule-published'),
 };
+
+const ACTIVITY_EDIT_FIELDS = [
+  ['date', '시작일', elements.activityDate],
+  ['endDate', '종료일', elements.activityEndDate],
+  ['displayDate', '화면 표시 날짜', elements.activityDisplayDate],
+  ['category', '분류', elements.activityCategory],
+  ['title', '제목', elements.activityTitle],
+  ['description', '설명', elements.activityDescription],
+  ['badge', '강조 문구', elements.activityBadge],
+  ['badgeTone', '강조 문구 스타일', elements.activityBadgeTone],
+  ['imageAlt', '사진 설명', elements.activityImageAlt],
+  ['published', '사이트에 공개', elements.activityPublished],
+  ['image', '대표 사진', elements.activityImage],
+];
+const SCHEDULE_EDIT_FIELDS = [
+  ['date', '시작일', elements.scheduleDate],
+  ['endDate', '종료일', elements.scheduleEndDate],
+  ['displayDate', '화면 표시 날짜', elements.scheduleDisplayDate],
+  ['title', '대회·행사명', elements.scheduleTitle],
+  ['location', '장소', elements.scheduleLocation],
+  ['division', '출전 부문', elements.scheduleDivision],
+  ['description', '안내 문구', elements.scheduleDescription],
+  ['published', '사이트에 공개', elements.schedulePublished],
+];
+
+function editorConfig(kind) {
+  const activity = kind === 'activity';
+  return {
+    originalKey: activity ? 'editingActivity' : 'editingSchedule',
+    conflictKey: activity ? 'activityConflict' : 'scheduleConflict',
+    panel: activity ? elements.activityConflict : elements.scheduleConflict,
+    fields: activity ? ACTIVITY_EDIT_FIELDS : SCHEDULE_EDIT_FIELDS,
+    fieldset: activity ? elements.editorFields : elements.scheduleEditorFields,
+    items: activity
+      ? state.manifests[state.selectedTeam]?.activities
+      : state.scheduleManifest?.schedules,
+  };
+}
+
+function syncSaveButtons() {
+  const activityBusy = state.busy || elements.editorFields.disabled;
+  elements.saveButton.disabled = activityBusy || state.imageProcessing || Boolean(state.activityConflict);
+  elements.saveButton.textContent = activityBusy
+    ? '저장하는 중…'
+    : state.imageProcessing
+      ? '사진 변환 중…'
+      : elements.activityPublished.checked ? '저장하고 공개' : '숨김으로 저장';
+  const scheduleBusy = state.busy || elements.scheduleEditorFields.disabled;
+  elements.saveScheduleButton.disabled = scheduleBusy || Boolean(state.scheduleConflict);
+  elements.saveScheduleButton.textContent = scheduleBusy
+    ? '저장하는 중…'
+    : elements.schedulePublished.checked ? '저장하고 공개' : '숨김으로 저장';
+}
 
 class GitHubApiError extends Error {
   constructor(status, message, responseMessage = '') {
@@ -170,7 +227,7 @@ function clearScheduleEditorStatus() {
 
 function friendlyError(error) {
   if (error instanceof ContentConflictError) {
-    return '다른 사용자의 변경이 먼저 반영되었습니다. 새로고침한 뒤 다시 시도해 주세요.';
+    return '다른 사용자의 변경이 먼저 반영되었습니다. 최신 내용을 확인한 뒤 다시 시도해 주세요.';
   }
   if (error instanceof GitHubApiError) {
     if (error.status === 401) return 'GitHub 로그인이 만료되었습니다. 다시 로그인해 주세요.';
@@ -205,22 +262,21 @@ function setBusy(isBusy) {
   elements.scheduleList.querySelectorAll('button').forEach(button => {
     button.disabled = isBusy;
   });
+  syncSaveButtons();
 }
 
 function setEditorBusy(isBusy) {
   elements.editorFields.disabled = isBusy;
-  elements.saveButton.disabled = isBusy;
   elements.cancelEditorButton.disabled = isBusy;
   elements.closeEditorButton.disabled = isBusy;
-  elements.saveButton.textContent = isBusy ? '안전하게 저장하는 중…' : '저장하고 게시';
+  syncSaveButtons();
 }
 
 function setScheduleEditorBusy(isBusy) {
   elements.scheduleEditorFields.disabled = isBusy;
-  elements.saveScheduleButton.disabled = isBusy;
   elements.cancelScheduleEditorButton.disabled = isBusy;
   elements.closeScheduleEditorButton.disabled = isBusy;
-  elements.saveScheduleButton.textContent = isBusy ? '안전하게 저장하는 중…' : '저장하고 게시';
+  syncSaveButtons();
 }
 
 function readSessionToken() {
@@ -733,10 +789,10 @@ async function loadScheduleManifest(commitSha) {
   return normalizeScheduleManifest(parsed);
 }
 
-async function loadManifests() {
+async function loadManifests({ quiet = false } = {}) {
   if (!state.token) return;
   setBusy(true);
-  setStatus('GitHub에서 최신 활동을 불러오고 있습니다.', 'info');
+  if (!quiet) setStatus('GitHub에서 최신 활동을 불러오고 있습니다.', 'info');
   try {
     const headSha = await getBranchHead();
     const scheduleResultPromise = loadScheduleManifest(headSha).then(
@@ -764,17 +820,17 @@ async function loadManifests() {
     state.manifests.firehawks = firehawks;
     state.scheduleManifest = scheduleManifest;
     renderManager();
-    if (scheduleLoadError) {
+    if (scheduleLoadError && !quiet) {
       setStatus(
         '활동 기록은 불러왔지만 FireHawks 출전 일정 파일을 불러오지 못했습니다. 일정 관리만 잠시 사용할 수 없습니다.',
         'warning',
       );
-    } else {
+    } else if (!quiet) {
       setStatus('최신 활동과 출전 일정을 불러왔습니다.', 'success');
     }
   } catch (error) {
     if (error instanceof GitHubApiError && error.status === 401) resetSession();
-    setStatus(friendlyError(error), 'error');
+    if (!quiet) setStatus(friendlyError(error), 'error');
     throw error;
   } finally {
     setBusy(false);
@@ -1048,6 +1104,7 @@ function clearProcessedImage() {
     state.previewObjectUrl = null;
   }
   elements.activityImage.value = '';
+  syncSaveButtons();
 }
 
 function showImagePreview(src, details, alt) {
@@ -1062,6 +1119,7 @@ function openEditor(activity = null) {
   state.editorInvoker = document.activeElement instanceof HTMLElement
     ? document.activeElement
     : null;
+  clearEditorConflict('activity');
   clearProcessedImage();
   clearEditorStatus();
   elements.activityForm.reset();
@@ -1083,6 +1141,7 @@ function openEditor(activity = null) {
   elements.activityBadgeTone.value = activity?.badgeTone || 'default';
   elements.activityImageAlt.value = activity?.imageAlt || '';
   elements.activityPublished.checked = activity ? activity.published : true;
+  setEditorBusy(false);
 
   if (activity) {
     showImagePreview(
@@ -1120,6 +1179,7 @@ function closeEditor() {
     elements.editorDialog.removeAttribute('open');
   }
   state.editingActivity = null;
+  clearEditorConflict('activity');
   clearProcessedImage();
   clearEditorStatus();
   window.setTimeout(() => {
@@ -1142,6 +1202,7 @@ function openScheduleEditor(schedule = null) {
   state.scheduleEditorInvoker = document.activeElement instanceof HTMLElement
     ? document.activeElement
     : null;
+  clearEditorConflict('schedule');
   clearScheduleEditorStatus();
   elements.scheduleForm.reset();
   elements.scheduleEditorFields.scrollTop = 0;
@@ -1157,6 +1218,7 @@ function openScheduleEditor(schedule = null) {
   elements.scheduleDivision.value = schedule?.division || '';
   elements.scheduleDescription.value = schedule?.description || '';
   elements.schedulePublished.checked = schedule ? schedule.published : true;
+  setScheduleEditorBusy(false);
 
   if (typeof elements.scheduleEditorDialog.showModal === 'function') {
     elements.scheduleEditorDialog.showModal();
@@ -1184,6 +1246,7 @@ function closeScheduleEditor() {
     elements.scheduleEditorDialog.removeAttribute('open');
   }
   state.editingSchedule = null;
+  clearEditorConflict('schedule');
   clearScheduleEditorStatus();
   window.setTimeout(() => {
     if (invoker?.isConnected) {
@@ -1253,13 +1316,14 @@ async function processSelectedImage(file, processVersion) {
   }
 
   state.imageProcessing = true;
-  elements.saveButton.disabled = true;
+  syncSaveButtons();
   elements.imagePreviewPanel.hidden = true;
   setStatus('사진 방향을 보정하고 위치정보를 제거하는 중입니다.', 'info');
 
   let decoded;
   try {
     decoded = await decodeImage(file);
+    if (processVersion !== state.imageProcessVersion) return;
     if (
       !Number.isInteger(decoded.width) ||
       !Number.isInteger(decoded.height) ||
@@ -1299,7 +1363,7 @@ async function processSelectedImage(file, processVersion) {
     decoded?.cleanup();
     if (processVersion === state.imageProcessVersion) {
       state.imageProcessing = false;
-      elements.saveButton.disabled = false;
+      syncSaveButtons();
     }
   }
 }
@@ -1431,6 +1495,205 @@ function buildScheduleFromForm() {
   return normalizeSchedule(schedule);
 }
 
+function editorFieldKeys(key) {
+  return key === 'image' ? ['image', 'imageWidth', 'imageHeight'] : [key];
+}
+
+function sameEditorField(key, left, right) {
+  return editorFieldKeys(key).every(name => (left?.[name] ?? '') === (right?.[name] ?? ''));
+}
+
+function copyEditorField(key, source, target) {
+  editorFieldKeys(key).forEach(name => {
+    if (source[name] === undefined) delete target[name];
+    else target[name] = source[name];
+  });
+}
+
+function mergeEditorChanges(kind, original, draft, latest) {
+  const merged = { ...latest };
+  const conflicts = [];
+  editorConfig(kind).fields.forEach(([key, label]) => {
+    if (sameEditorField(key, original, draft)) return;
+    if (!sameEditorField(key, original, latest) && !sameEditorField(key, draft, latest)) {
+      conflicts.push({ key, label });
+    } else {
+      copyEditorField(key, draft, merged);
+    }
+  });
+  return { latest, draft, merged, conflicts };
+}
+
+function clearEditorConflict(kind) {
+  const config = editorConfig(kind);
+  state[config.conflictKey] = null;
+  config.panel.hidden = true;
+  config.panel.replaceChildren();
+  config.fields.forEach(([, , input]) => { input.disabled = false; });
+  syncSaveButtons();
+}
+
+function applyEditorMerge(kind, review) {
+  const config = editorConfig(kind);
+  state[config.originalKey] = { ...review.latest };
+  config.fields.forEach(([key, , input]) => {
+    if (key === 'image') return;
+    if (key === 'published') input.checked = review.merged.published;
+    else input.value = review.merged[key] || (key === 'badgeTone' ? 'default' : '');
+  });
+  if (kind === 'activity') {
+    if (!sameEditorField('image', review.merged, review.draft)) clearProcessedImage();
+    if (!state.processedImage) {
+      showImagePreview(
+        activityPreviewUrl(review.merged.image),
+        `현재 사진 · ${review.merged.imageWidth} × ${review.merged.imageHeight}px`,
+        review.merged.imageAlt,
+      );
+      elements.imageHelp.textContent = '새 사진을 선택하지 않으면 현재 사진이 유지됩니다.';
+    }
+  }
+  clearEditorConflict(kind);
+  setStatus('최신 변경과 작성 내용을 합쳤습니다. 내용을 확인한 뒤 저장 버튼을 다시 눌러 주세요.', 'warning');
+}
+
+function conflictValue(key, item) {
+  if (key === 'published') return item.published ? '공개' : '숨김';
+  if (key === 'badgeTone') return item.badgeTone === 'muted' ? '차분하게' : '기본';
+  return item[key] || '(비어 있음)';
+}
+
+function showEditorConflict(kind, review) {
+  const config = editorConfig(kind);
+  state[config.conflictKey] = review;
+  config.panel.replaceChildren();
+  config.panel.hidden = false;
+  config.fields.forEach(([, , input]) => { input.disabled = true; });
+  config.panel.append(createElement('h3', '', review.retry ? '최신 내용 확인이 필요합니다' : '다른 관리자의 변경을 확인하세요'));
+
+  if (review.retry) {
+    config.panel.append(createElement('p', '', '작성 내용은 그대로 유지했습니다. 연결이 복구되면 최신 내용을 다시 확인해 주세요.'));
+    const retry = createElement('button', 'button button--quiet', '최신 내용 다시 확인');
+    retry.type = 'button';
+    retry.addEventListener('click', () => {
+      if (!state.busy) void recoverEditorConflict(kind, review.draft);
+    });
+    config.panel.append(retry);
+  } else if (!review.latest) {
+    config.panel.append(createElement('p', '', '이 기록이 삭제되어 기존 기록에 저장할 수 없습니다. 작성 내용은 유지했습니다. 새 기록으로 이어서 작성할 수 있습니다.'));
+    const recreate = createElement('button', 'button button--quiet', '새 기록으로 이어서 작성');
+    recreate.type = 'button';
+    recreate.addEventListener('click', () => {
+      state[config.originalKey] = null;
+      clearEditorConflict(kind);
+      if (kind === 'activity') {
+        elements.activityId.value = '';
+        elements.editorTitle.textContent = '새 활동 등록';
+        if (!state.processedImage) elements.imagePreviewPanel.hidden = true;
+      } else {
+        elements.scheduleId.value = '';
+        elements.scheduleEditorTitle.textContent = '새 출전 일정 등록';
+      }
+      setStatus(kind === 'activity' && !state.processedImage
+        ? '입력 내용을 새 활동으로 옮겼습니다. 대표 사진을 선택한 뒤 저장해 주세요.'
+        : '입력 내용을 새 기록으로 옮겼습니다. 확인한 뒤 저장해 주세요.', 'warning');
+    });
+    config.panel.append(recreate);
+  } else {
+    config.panel.append(createElement('p', '', '같은 항목을 서로 다르게 수정했습니다. 아래에서 사용할 내용을 선택하세요. 나머지 작성 내용과 최신 변경은 함께 보존됩니다.'));
+    const choices = [];
+    review.conflicts.forEach(({ key, label }) => {
+      const row = createElement('div', 'editor-conflict__row');
+      row.append(createElement('strong', '', label));
+      const comparison = createElement('div', 'editor-conflict__comparison');
+      [['내 입력', review.draft], ['최신 내용', review.latest]].forEach(([title, item]) => {
+        const value = createElement('div', 'editor-conflict__value');
+        value.append(createElement('strong', '', title));
+        if (key === 'image') {
+          const preview = createElement('img');
+          preview.src = item === review.draft && state.previewObjectUrl
+            ? state.previewObjectUrl : activityPreviewUrl(item.image);
+          preview.alt = `${title} 대표 사진`;
+          value.append(preview);
+        } else {
+          value.append(createElement('p', '', conflictValue(key, item)));
+        }
+        comparison.append(value);
+      });
+      const choice = createElement('select');
+      choice.setAttribute('aria-label', `${label}: 사용할 내용`);
+      [['', '사용할 내용 선택'], ['latest', '최신 내용 사용'], ['draft', '내 입력 사용']].forEach(([value, text]) => {
+        const option = createElement('option', '', text);
+        option.value = value;
+        choice.append(option);
+      });
+      row.append(comparison, choice);
+      config.panel.append(row);
+      choices.push({ key, choice });
+    });
+    const apply = createElement('button', 'button button--primary', '선택한 내용으로 계속 편집');
+    apply.type = 'button';
+    apply.addEventListener('click', () => {
+      const missing = choices.find(({ choice }) => !choice.value);
+      if (missing) {
+        setStatus('각 항목에서 사용할 내용을 선택해 주세요.', 'warning');
+        missing.choice.focus();
+        return;
+      }
+      choices.forEach(({ key, choice }) => copyEditorField(key, review[choice.value], review.merged));
+      applyEditorMerge(kind, review);
+    });
+    config.panel.append(apply);
+  }
+  syncSaveButtons();
+  config.fieldset.scrollTop = 0;
+  window.setTimeout(() => config.panel.focus(), 0);
+}
+
+function reviewLatestEditorItem(kind, draft) {
+  const config = editorConfig(kind);
+  const original = state[config.originalKey];
+  if (!config.items) throw new Error('최신 목록을 불러오지 못했습니다. 다시 확인해 주세요.');
+  if (!original) {
+    clearEditorConflict(kind);
+    setStatus('최신 목록을 확인했습니다. 입력 내용은 유지되어 있으니 저장 버튼을 다시 눌러 주세요.', 'warning');
+    return;
+  }
+  const latest = config.items.find(item => item.id === original.id);
+  const review = latest ? mergeEditorChanges(kind, original, draft, latest) : { latest: null, draft };
+  if (latest && review.conflicts.length === 0) {
+    applyEditorMerge(kind, review);
+  } else {
+    showEditorConflict(kind, review);
+    setStatus('작성 내용이 보존되어 있습니다. 편집창의 변경 확인을 완료한 뒤 저장해 주세요.', 'warning');
+  }
+}
+
+async function recoverEditorConflict(kind, draft) {
+  try {
+    await loadManifests({ quiet: true });
+    reviewLatestEditorItem(kind, draft);
+  } catch (error) {
+    if (state.token) showEditorConflict(kind, { retry: true, draft });
+    setStatus(friendlyError(error), 'error');
+  }
+}
+
+function editorVersionIsCurrent(kind, draft) {
+  const config = editorConfig(kind);
+  const original = state[config.originalKey];
+  if (state[config.conflictKey]) {
+    setStatus('편집창에서 다른 관리자의 변경을 먼저 확인해 주세요.', 'warning');
+    config.panel.focus();
+    return false;
+  }
+  if (!original) return true;
+  const latest = config.items?.find(item => item.id === original.id);
+  if (latest && original.order === latest.order &&
+      config.fields.every(([key]) => sameEditorField(key, original, latest))) return true;
+  reviewLatestEditorItem(kind, draft);
+  return false;
+}
+
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1545,6 +1808,7 @@ async function saveActivity(event) {
   let activity;
   try {
     activity = buildActivityFromForm();
+    if (!editorVersionIsCurrent('activity', activity)) return;
   } catch (error) {
     setStatus(friendlyError(error), 'error');
     return;
@@ -1584,8 +1848,12 @@ async function saveActivity(event) {
     renderManager();
     setStatus('저장이 완료되었습니다. Vercel 배포 후 사이트에 자동 반영됩니다.', 'success');
   } catch (error) {
-    if (error instanceof GitHubApiError && error.status === 401) resetSession();
-    setStatus(friendlyError(error), error instanceof ContentConflictError ? 'warning' : 'error');
+    if (error instanceof ContentConflictError) {
+      await recoverEditorConflict('activity', activity);
+    } else {
+      if (error instanceof GitHubApiError && error.status === 401) resetSession();
+      setStatus(friendlyError(error), 'error');
+    }
   } finally {
     setEditorBusy(false);
     setBusy(false);
@@ -1661,6 +1929,7 @@ async function saveSchedule(event) {
   let schedule;
   try {
     schedule = buildScheduleFromForm();
+    if (!editorVersionIsCurrent('schedule', schedule)) return;
   } catch (error) {
     setStatus(friendlyError(error), 'error');
     return;
@@ -1699,14 +1968,11 @@ async function saveSchedule(event) {
     renderManager();
     setStatus('출전 일정 저장이 완료되었습니다. Vercel 배포 후 사이트에 자동 반영됩니다.', 'success');
   } catch (error) {
-    if (error instanceof GitHubApiError && error.status === 401) resetSession();
-    setStatus(friendlyError(error), error instanceof ContentConflictError ? 'warning' : 'error');
     if (error instanceof ContentConflictError) {
-      try {
-        await loadManifests();
-      } catch {
-        // loadManifests already reports the failure.
-      }
+      await recoverEditorConflict('schedule', schedule);
+    } else {
+      if (error instanceof GitHubApiError && error.status === 401) resetSession();
+      setStatus(friendlyError(error), 'error');
     }
   } finally {
     setScheduleEditorBusy(false);
@@ -1838,7 +2104,7 @@ elements.activityImage.addEventListener('change', () => {
     state.processedImage = null;
     state.imageProcessing = false;
     elements.activityImage.value = '';
-    elements.saveButton.disabled = false;
+    syncSaveButtons();
     if (state.editingActivity) {
       showImagePreview(
         activityPreviewUrl(state.editingActivity.image),
@@ -1857,5 +2123,7 @@ elements.activityForm.addEventListener('submit', event => {
 elements.scheduleForm.addEventListener('submit', event => {
   void saveSchedule(event);
 });
+elements.activityPublished.addEventListener('change', syncSaveButtons);
+elements.schedulePublished.addEventListener('change', syncSaveButtons);
 
 void restoreSession();

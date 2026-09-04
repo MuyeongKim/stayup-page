@@ -853,6 +853,7 @@ fieldset:disabled button {
 
 .editor-fields {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-row: 3;
   min-height: 0;
   min-width: 0;
@@ -866,6 +867,73 @@ fieldset:disabled button {
   scroll-padding-block: 1rem;
   scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
+}
+
+.editor-conflict {
+  display: grid;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #ead28d;
+  border-radius: 0.8rem;
+  background: var(--warning-soft);
+  gap: 0.9rem;
+}
+
+.editor-conflict h3,
+.editor-conflict p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.editor-conflict h3 {
+  font-size: 1rem;
+}
+
+.editor-conflict p,
+.editor-conflict__value {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.editor-conflict__row {
+  display: grid;
+  min-width: 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid #ead28d;
+  gap: 0.6rem;
+}
+
+.editor-conflict__comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.editor-conflict__value {
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: #fff;
+  white-space: pre-line;
+}
+
+.editor-conflict__value img {
+  display: block;
+  width: 100%;
+  height: 7rem;
+  margin-top: 0.4rem;
+  object-fit: contain;
+}
+
+.editor-conflict select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.85rem;
+  padding: 0.6rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.5rem;
+  background: #fff;
 }
 
 .field-grid {
@@ -936,6 +1004,7 @@ fieldset:disabled button {
 
 .image-editor {
   display: grid;
+  min-width: 0;
   padding: 1rem;
   border: 1px solid #c9d9eb;
   border-radius: var(--radius-md);
@@ -962,6 +1031,7 @@ fieldset:disabled button {
 
 .file-picker {
   display: grid;
+  min-width: 0;
   padding: 1rem;
   border: 1px dashed #9eb7d4;
   border-radius: 0.8rem;
@@ -988,6 +1058,8 @@ fieldset:disabled button {
 }
 
 .file-picker input {
+  min-width: 0;
+  max-width: 100%;
   margin-top: 0.5rem;
   color: var(--ink-700);
   font-size: 0.78rem;
@@ -1223,6 +1295,10 @@ fieldset:disabled button {
 
   .field-grid--two {
     grid-template-columns: 1fr;
+  }
+
+  .editor-conflict__comparison {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .image-editor__heading {

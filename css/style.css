@@ -185,7 +185,8 @@ a {
     transition: color 0.2s ease, background-color 0.2s ease;
 }
 
-.site-nav a:hover {
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
 }
@@ -671,11 +672,12 @@ a {
 
 .latest-activity-meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     color: var(--muted);
-    font-size: 0.74rem;
+    font-size: 0.875rem;
     font-weight: 600;
 }
 
@@ -695,7 +697,7 @@ a {
 .latest-activity-category {
     margin: 22px 0 0;
     color: var(--blue-700);
-    font-size: 0.78rem;
+    font-size: 0.875rem;
     font-weight: 800;
 }
 

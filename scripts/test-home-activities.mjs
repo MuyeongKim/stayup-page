@@ -92,7 +92,7 @@ assert.deepEqual(
     imageAlt: '드론 수색 현장',
     imageWidth: 960,
     imageHeight: 720,
-    archiveHref: '/activities/?team=stayup&year=2026'
+    archiveHref: '/activities/?team=stayup&year=2026#activity-stayup-search-2026'
   },
   '최신 활동 카드에 필요한 팀·날짜·기록 링크 정보를 만들어야 합니다.'
 );

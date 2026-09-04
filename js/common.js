@@ -6,21 +6,21 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener('click', (event) => {
+            if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             const targetId = anchor.getAttribute('href');
             if (!targetId || targetId === '#') return;
 
-            const target = document.querySelector(targetId);
-            if (!target) return;
-
-            event.preventDefault();
-            target.scrollIntoView({
-                behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
-                block: 'start'
-            });
-
-            if (anchor.classList.contains('skip-link')) {
-                target.focus({ preventScroll: true });
+            let target;
+            try {
+                target = document.getElementById(decodeURIComponent(targetId.slice(1)));
+            } catch {
+                return;
             }
+            if (!target) return;
+            // Keep the browser's fragment URL and Back behavior, while placing
+            // keyboard focus at the section the user chose.
+            if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+            target.focus({ preventScroll: true });
         });
     });
 }
@@ -84,6 +84,7 @@ function initMobileMenu() {
             setOpen(false);
         }
     }, { passive: true });
+    document.documentElement.classList.add('has-navigation-js');
 }
 
 function initStickyHeader() {

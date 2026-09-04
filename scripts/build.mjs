@@ -3,6 +3,7 @@ import { cp, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs/prom
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { renderStaticContent } from './render-static-content.mjs';
 import {
   contentFiles,
   readAndValidateContent,
@@ -134,6 +135,7 @@ async function buildContent() {
 async function main() {
   await copyStaticFiles();
   await buildContent();
+  await renderStaticContent(outputDir);
 }
 
 main().catch((error) => {

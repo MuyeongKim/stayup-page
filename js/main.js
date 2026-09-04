@@ -1,4 +1,4 @@
-import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026090201';
+import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026090501';
 
 /**
  * Entry page enhancements.
@@ -91,10 +91,16 @@ async function initVisitorOverview() {
 }
 
 function createLatestActivityCard(activity) {
+    if (activity.staticElement) return activity.staticElement;
     const view = createActivityViewModel(activity);
     const article = document.createElement('article');
     const titleId = `latest-title-${view.team}-${view.id}`;
     article.className = `latest-activity-card ${view.teamClass}`;
+    article.dataset.activityId = view.id;
+    article.dataset.team = activity.team;
+    article.dataset.date = activity.date;
+    article.dataset.endDate = activity.endDate || '';
+    article.dataset.order = activity.order;
     article.setAttribute('aria-labelledby', titleId);
 
     const link = document.createElement('a');
@@ -151,54 +157,71 @@ function createActivityStatus(message, className = 'activity-load-status') {
     return status;
 }
 
-function renderActivityError(container) {
-    const status = createActivityStatus('최근 활동을 불러오지 못했습니다. ', 'activity-load-status activity-load-error');
-    const link = document.createElement('a');
-    link.href = '/activities/';
-    link.textContent = '전체 활동 기록 보기';
-    status.append(link);
-    container.replaceChildren(status);
-    container.setAttribute('aria-busy', 'false');
-}
-
-async function loadActivitySource(source) {
-    const activities = await window.ActivityDataStore.loadActivities(source.url, source.team);
-    return { team: source.team, activities };
-}
-
-async function initLatestActivities() {
+function initLatestActivities() {
     const container = document.getElementById('latest-activities-list');
     if (!container) return;
-    if (!window.ActivityDataStore?.loadActivities) {
-        renderActivityError(container);
-        return;
-    }
+    const store = window.ActivityDataStore;
+    if (!store?.loadActivitiesDetailed) return;
+    const initial = store.readRenderedActivities(container);
+    const sourceItems = new Map(ACTIVITY_SOURCES.map(({ team }) => [team, initial.filter((activity) => activity.team === team)]));
+    const pending = new Set();
+    const failed = new Set();
+    const invalidCounts = new Map();
+    const teamName = (team) => team === 'stayup' ? 'Stay-Up' : 'FireHawks';
 
-    const results = await Promise.allSettled(ACTIVITY_SOURCES.map(loadActivitySource));
-    const loadedSources = results
-        .filter((result) => result.status === 'fulfilled')
-        .map((result) => result.value);
-
-    try {
-        const activities = selectLatestActivities(loadedSources, 3);
-        if (activities.length === 0) {
-            renderActivityError(container);
-            return;
-        }
-
+    const render = () => {
+        const focusedId = document.activeElement?.closest?.('.latest-activity-card')?.dataset.activityId;
+        const activities = selectLatestActivities(ACTIVITY_SOURCES.map(({ team }) => ({ team, activities: sourceItems.get(team) })), 3);
         const cards = activities.map(createLatestActivityCard);
-        if (results.some((result) => result.status === 'rejected')) {
-            cards.push(createActivityStatus(
-                '일부 팀의 기록을 불러오지 못해 확인 가능한 최신 활동만 표시합니다.',
-                'activity-partial-warning'
-            ));
+        const messages = [];
+        if (failed.size) {
+            const retained = [...failed].some((team) => sourceItems.get(team).length > 0);
+            messages.push(`${[...failed].map(teamName).join(', ')} 최신 기록을 불러오지 못했습니다.${retained ? ' 저장된 기본 기록을 함께 표시합니다.' : ''}`);
+        }
+        const invalid = [...invalidCounts.values()].reduce((sum, count) => sum + count, 0);
+        if (invalid) messages.push(`형식이 올바르지 않은 기록 ${invalid}건은 제외했습니다.`);
+        if (pending.size) messages.push(`${[...pending].map(teamName).join(', ')} 최신 기록을 확인하고 있습니다.`);
+        if (!activities.length && !pending.size && !failed.size) messages.push('현재 공개된 활동 기록이 없습니다.');
+        if (messages.length) {
+            const status = createActivityStatus(messages.join(' '), activities.length ? 'activity-partial-warning' : 'activity-load-status');
+            if (failed.size) {
+                const retry = document.createElement('button');
+                retry.type = 'button';
+                retry.className = 'activity-retry-button';
+                retry.textContent = '실패한 기록 다시 불러오기';
+                retry.addEventListener('click', () => ACTIVITY_SOURCES.filter((source) => failed.has(source.team)).forEach(loadSource));
+                status.append(retry);
+            }
+            cards.push(status);
         }
         container.replaceChildren(...cards);
-        container.setAttribute('aria-busy', 'false');
-    } catch (error) {
-        console.error('[메인 활동 기록] 렌더링에 실패했습니다.', error);
-        renderActivityError(container);
-    }
+        if (focusedId) {
+            const focusedCard = Array.from(container.querySelectorAll('article[data-activity-id]'))
+                .find((card) => card.dataset.activityId === focusedId);
+            focusedCard?.querySelector('a')?.focus({ preventScroll: true });
+        }
+        container.setAttribute('aria-busy', String(pending.size > 0 && activities.length === 0));
+    };
+
+    const loadSource = async (source) => {
+        if (pending.has(source.team)) return;
+        pending.add(source.team);
+        failed.delete(source.team);
+        render();
+        try {
+            const result = await store.loadActivitiesDetailed(source.url, source.team);
+            if (result.activities.length === 0 && result.invalidCount > 0) throw new Error('유효한 활동 기록이 없습니다.');
+            sourceItems.set(source.team, result.activities);
+            invalidCounts.set(source.team, result.invalidCount);
+        } catch (error) {
+            console.warn(`[최근 활동] ${source.team} 갱신에 실패했습니다.`, error);
+            failed.add(source.team);
+        } finally {
+            pending.delete(source.team);
+            render();
+        }
+    };
+    ACTIVITY_SOURCES.forEach(loadSource);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

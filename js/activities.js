@@ -9,7 +9,7 @@
         stayup: { label: 'Stay-Up', className: 'team-stayup' },
         firehawks: { label: 'FireHawks', className: 'team-firehawks' }
     };
-    const state = { activities: [], team: 'all', year: 'all' };
+    const store = window.ActivityDataStore;
     const ui = {
         grid: document.getElementById('activities-grid'),
         loading: document.getElementById('loading-state'),
@@ -22,81 +22,23 @@
         total: document.getElementById('total-activity-count'),
         teamButtons: Array.from(document.querySelectorAll('[data-team-filter]'))
     };
+    if (!store || Object.values(ui).some((element) => !element)) return;
+    document.documentElement.classList.add('has-archive-js');
 
-    function isObject(value) {
-        return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-    }
+    const initialActivities = store.readRenderedActivities(ui.grid);
+    const state = {
+        activities: initialActivities,
+        sourceItems: new Map(SOURCES.map(({ team }) => [team, initialActivities.filter((activity) => activity.team === team)])),
+        pending: new Set(),
+        failures: new Set(),
+        invalidCounts: new Map(),
+        team: 'all', year: 'all', focusedHash: ''
+    };
 
-    function isText(value, maxLength) {
-        return typeof value === 'string' && value.trim().length > 0 && value.length <= maxLength;
-    }
-
-    function isValidDate(value) {
-        if (typeof value !== 'string' || !/^\d{4}(?:-\d{2}(?:-\d{2})?)?$/.test(value)) return false;
-        const parts = value.split('-').map(Number);
-        const [year, month, day] = parts;
-        if (year < 1900 || year > 2200) return false;
-        if (parts.length === 1) return true;
-        if (month < 1 || month > 12) return false;
-        if (parts.length === 2) return true;
-        return day >= 1 && day <= new Date(Date.UTC(year, month, 0)).getUTCDate();
-    }
-
-    function sortDate(value) {
-        const parts = value.split('-').map(Number);
-        const year = parts[0];
-        const month = parts[1] || 12;
-        const day = parts[2] || new Date(Date.UTC(year, month, 0)).getUTCDate();
-        return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    }
-
-    function isSafeImagePath(value) {
-        return typeof value === 'string'
-            && value.startsWith('/images/')
-            && !value.includes('..')
-            && /\.(?:avif|webp|png|jpe?g)$/i.test(value);
-    }
-
-    function validateActivity(entry, team) {
-        if (!isObject(entry) || entry.published !== true) return null;
-        if (!isText(entry.id, 100) || !/^[a-z0-9][a-z0-9-]*$/.test(entry.id)) return null;
-        if (!isValidDate(entry.date)) return null;
-        if (entry.endDate != null && !isValidDate(entry.endDate)) return null;
-        if (entry.endDate && sortDate(entry.endDate) < sortDate(entry.date)) return null;
-        if (!isText(entry.category, 60) || !isText(entry.title, 180) || !isText(entry.description, 1200)) return null;
-        if (!isSafeImagePath(entry.image) || !isText(entry.imageAlt, 320)) return null;
-        if (!Number.isInteger(entry.imageWidth) || entry.imageWidth <= 0 || entry.imageWidth > 10000) return null;
-        if (!Number.isInteger(entry.imageHeight) || entry.imageHeight <= 0 || entry.imageHeight > 10000) return null;
-        if (entry.displayDate !== undefined && !isText(entry.displayDate, 80)) return null;
-        if (entry.badge !== undefined && !isText(entry.badge, 80)) return null;
-
-        return {
-            id: entry.id,
-            team,
-            date: entry.date,
-            endDate: entry.endDate || null,
-            displayDate: entry.displayDate || null,
-            category: entry.category.trim(),
-            title: entry.title.trim(),
-            description: entry.description.trim(),
-            image: entry.image,
-            imageAlt: entry.imageAlt.trim(),
-            imageWidth: entry.imageWidth,
-            imageHeight: entry.imageHeight,
-            badge: entry.badge ? entry.badge.trim() : null,
-            badgeTone: entry.badgeTone === 'muted' ? 'muted' : 'default',
-            order: Number.isFinite(entry.order) ? entry.order : 0,
-            year: entry.date.slice(0, 4),
-            sortDate: sortDate(entry.endDate || entry.date)
-        };
-    }
-
-    function readInitialFilters() {
+    function readFilters() {
         const params = new URLSearchParams(window.location.search);
-        const requestedTeam = params.get('team');
-        const requestedYear = params.get('year');
-        if (requestedTeam === 'stayup' || requestedTeam === 'firehawks') state.team = requestedTeam;
-        if (/^\d{4}$/.test(requestedYear || '')) state.year = requestedYear;
+        state.team = TEAMS[params.get('team')] ? params.get('team') : 'all';
+        state.year = /^\d{4}$/.test(params.get('year') || '') ? params.get('year') : 'all';
     }
 
     function syncFilterControls() {
@@ -104,7 +46,25 @@
             const active = button.dataset.teamFilter === state.team;
             button.classList.toggle('is-active', active);
             button.setAttribute('aria-pressed', String(active));
+            button.disabled = false;
         });
+        const years = [...new Set(state.activities.map((activity) => activity.date.slice(0, 4)))];
+        if (state.year !== 'all' && !years.includes(state.year)) years.push(state.year);
+        years.sort((a, b) => b.localeCompare(a));
+        const values = ['all', ...years];
+        const currentValues = Array.from(ui.year.children).map((option) => option.value);
+        if (values.join(',') !== currentValues.join(',')) {
+            const fragment = document.createDocumentFragment();
+            values.forEach((year) => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year === 'all' ? '전체 연도' : `${year}년`;
+                fragment.append(option);
+            });
+            ui.year.replaceChildren(fragment);
+        }
+        ui.year.value = state.year;
+        ui.year.disabled = false;
     }
 
     function syncFilterUrl() {
@@ -112,57 +72,28 @@
         if (state.team !== 'all') params.set('team', state.team);
         if (state.year !== 'all') params.set('year', state.year);
         const query = params.toString();
-        window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`);
-    }
-
-    async function loadSource(source) {
-        const response = await fetch(source.url, { headers: { Accept: 'application/json' } });
-        if (!response.ok) throw new Error(`Activity request failed: ${response.status}`);
-        const payload = await response.json();
-        if (!isObject(payload) || payload.team !== source.team || !Array.isArray(payload.activities)) {
-            throw new Error('Unexpected activity data shape');
+        const url = `${window.location.pathname}${query ? `?${query}` : ''}`;
+        if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== url) {
+            window.history.pushState(null, '', url);
         }
-
-        const items = [];
-        let invalidCount = 0;
-        payload.activities.forEach((entry) => {
-            if (isObject(entry) && entry.published !== true) return;
-            const activity = validateActivity(entry, source.team);
-            if (activity) items.push(activity);
-            else invalidCount += 1;
-        });
-        return { items, invalidCount };
-    }
-
-    function formatDate(value) {
-        const parts = value.split('-');
-        if (parts.length === 1) return parts[0];
-        if (parts.length === 2) return `${parts[0]}. ${parts[1]}`;
-        return `${parts[0]}. ${parts[1]}. ${parts[2]}`;
-    }
-
-    function appendActivityDate(container, activity) {
-        const start = document.createElement('time');
-        start.dateTime = activity.date;
-        start.textContent = activity.displayDate || formatDate(activity.date);
-        container.append(start);
-        if (!activity.endDate) return;
-
-        const separator = document.createElement('span');
-        separator.textContent = ' — ';
-        separator.setAttribute('aria-hidden', 'true');
-        const end = document.createElement('time');
-        end.dateTime = activity.endDate;
-        end.textContent = formatDate(activity.endDate);
-        container.append(separator, end);
+        state.focusedHash = '';
     }
 
     function createCard(activity) {
+        if (activity.staticElement) return activity.staticElement;
+        if (activity.renderedElement) return activity.renderedElement;
         const team = TEAMS[activity.team];
         const article = document.createElement('article');
         const titleId = `activity-title-${activity.team}-${activity.id}`;
+        article.id = `activity-${activity.team}-${activity.id}`;
         article.className = `activity-card ${team.className}`;
+        article.tabIndex = -1;
         article.dataset.activityId = activity.id;
+        article.dataset.team = activity.team;
+        article.dataset.year = activity.date.slice(0, 4);
+        article.dataset.date = activity.date;
+        article.dataset.endDate = activity.endDate;
+        article.dataset.order = activity.order;
         article.setAttribute('aria-labelledby', titleId);
 
         const media = document.createElement('div');
@@ -174,7 +105,6 @@
         image.height = activity.imageHeight;
         image.loading = 'lazy';
         image.decoding = 'async';
-
         const labels = document.createElement('div');
         labels.className = 'activity-labels';
         const teamLabel = document.createElement('span');
@@ -185,120 +115,135 @@
         category.textContent = activity.category;
         labels.append(teamLabel, category);
         media.append(image, labels);
-
         if (activity.badge) {
             const badge = document.createElement('span');
             badge.className = activity.badgeTone === 'muted' ? 'activity-badge is-muted' : 'activity-badge';
             badge.textContent = activity.badge;
             media.append(badge);
         }
-
         const content = document.createElement('div');
         content.className = 'activity-content';
         const date = document.createElement('p');
         date.className = 'activity-date';
-        appendActivityDate(date, activity);
+        const time = document.createElement('time');
+        time.dateTime = activity.date;
+        time.textContent = store.getDateLabel(activity);
+        date.append(time);
         const title = document.createElement('h3');
         title.id = titleId;
         title.textContent = activity.title;
         const description = document.createElement('p');
         description.className = 'activity-description';
         description.textContent = activity.description;
-        content.append(date, title, description);
+        const share = document.createElement('a');
+        share.className = 'activity-share-link';
+        share.href = store.getArchiveHref(activity);
+        share.textContent = '이 활동 링크';
+        share.setAttribute('aria-label', `${activity.title} 활동 링크`);
+        content.append(date, title, description, share);
         article.append(media, content);
+        activity.renderedElement = article;
         return article;
     }
 
-    function visibleActivities() {
-        return state.activities.filter((activity) => (
-            (state.team === 'all' || activity.team === state.team)
-            && (state.year === 'all' || activity.year === state.year)
-        ));
+    function focusLinkedActivity() {
+        const hash = window.location.hash;
+        ui.grid.querySelectorAll('.is-targeted').forEach((card) => card.classList.remove('is-targeted'));
+        if (!hash || !/^#activity-(?:stayup|firehawks)-[a-z0-9-]+$/.test(hash)) return;
+        const target = document.getElementById(hash.slice(1));
+        if (!target || !ui.grid.contains(target)) return;
+        target.classList.add('is-targeted');
+        if (state.focusedHash === hash) return;
+        state.focusedHash = hash;
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
+
+    function renderStatus(visibleCount) {
+        const hasRecords = state.activities.length > 0;
+        const loading = state.pending.size > 0;
+        const failedLabels = [...state.failures].map((team) => TEAMS[team].label);
+        const invalid = [...state.invalidCounts.values()].reduce((sum, count) => sum + count, 0);
+        ui.loading.hidden = !loading || hasRecords;
+        ui.grid.setAttribute('aria-busy', String(loading && !hasRecords));
+        ui.error.hidden = loading || hasRecords || state.failures.size === 0;
+        ui.empty.hidden = visibleCount !== 0 || (!hasRecords && loading) || !ui.error.hidden;
+        ui.total.textContent = !hasRecords && state.failures.size > 0 ? '—' : String(state.activities.length);
+        ui.warning.replaceChildren();
+        const messages = [];
+        if (failedLabels.length) {
+            const retained = [...state.failures].some((team) => state.sourceItems.get(team).length > 0);
+            messages.push(`${failedLabels.join(', ')} 최신 기록을 불러오지 못했습니다.${retained ? ' 저장된 기본 기록을 함께 표시합니다.' : hasRecords ? ' 확인 가능한 팀의 기록을 표시합니다.' : ''}`);
+        }
+        if (invalid > 0) messages.push(`형식이 올바르지 않은 기록 ${invalid}건은 제외했습니다.`);
+        if (loading && hasRecords) messages.push(`${[...state.pending].map((team) => TEAMS[team].label).join(', ')} 최신 기록을 확인하고 있습니다.`);
+        const requestedId = window.location.hash.slice(1);
+        if (!loading && /^activity-(?:stayup|firehawks)-[a-z0-9-]+$/.test(requestedId)
+            && !state.activities.some((activity) => `activity-${activity.team}-${activity.id}` === requestedId)) {
+            messages.push(state.failures.size > 0
+                ? '링크의 활동을 확인하지 못했습니다. 기록을 다시 불러와 주세요.'
+                : '링크의 활동이 없거나 공개되지 않았습니다. 다른 기록을 확인해 주세요.');
+        }
+        ui.warning.hidden = messages.length === 0;
+        if (messages.length) ui.warning.append(document.createTextNode(messages.join(' ')));
+        if (state.failures.size > 0 && hasRecords) {
+            const retry = document.createElement('button');
+            retry.type = 'button';
+            retry.className = 'activity-retry-button';
+            retry.textContent = '실패한 기록 다시 불러오기';
+            retry.addEventListener('click', retryFailedSources);
+            ui.warning.append(retry);
+        }
+        const teamLabel = state.team === 'all' ? '전체 팀' : TEAMS[state.team].label;
+        const yearLabel = state.year === 'all' ? '전체 연도' : `${state.year}년`;
+        ui.result.textContent = !hasRecords && loading
+            ? '활동 기록을 불러오는 중입니다.'
+            : !ui.error.hidden ? '활동 기록을 불러오지 못했습니다.' : `${teamLabel} · ${yearLabel} 활동 ${visibleCount}건`;
     }
 
     function render() {
-        const activities = visibleActivities();
-        const fragment = document.createDocumentFragment();
-        activities.forEach((activity) => fragment.append(createCard(activity)));
-        ui.grid.replaceChildren(fragment);
-        ui.empty.hidden = activities.length !== 0;
-        const teamLabel = state.team === 'all' ? '전체 팀' : TEAMS[state.team].label;
-        const yearLabel = state.year === 'all' ? '전체 연도' : `${state.year}년`;
-        ui.result.textContent = `${teamLabel} · ${yearLabel} 활동 ${activities.length}건`;
-    }
-
-    function populateYears() {
-        const years = [...new Set(state.activities.map((activity) => activity.year))]
-            .sort((a, b) => b.localeCompare(a));
-        const fragment = document.createDocumentFragment();
-        const all = document.createElement('option');
-        all.value = 'all';
-        all.textContent = '전체 연도';
-        fragment.append(all);
-        years.forEach((year) => {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = `${year}년`;
-            fragment.append(option);
-        });
-        ui.year.replaceChildren(fragment);
-        if (!years.includes(state.year)) state.year = 'all';
-        ui.year.value = state.year;
-    }
-
-    function setLoading(loading) {
-        ui.loading.hidden = !loading;
-        ui.grid.setAttribute('aria-busy', String(loading));
-        ui.teamButtons.forEach((button) => { button.disabled = loading; });
-        ui.year.disabled = loading;
-        if (loading) {
-            ui.error.hidden = true;
-            ui.warning.hidden = true;
-            ui.empty.hidden = true;
-            ui.result.textContent = '활동 기록을 불러오는 중입니다.';
-        }
-    }
-
-    async function loadActivities() {
-        setLoading(true);
-        const results = await Promise.allSettled(SOURCES.map(loadSource));
-        const successful = results.filter((result) => result.status === 'fulfilled');
-        if (successful.length === 0) {
-            state.activities = [];
-            ui.grid.replaceChildren();
-            ui.total.textContent = '0';
-            setLoading(false);
-            ui.error.hidden = false;
-            ui.result.textContent = '활동 기록을 불러오지 못했습니다.';
-            return;
-        }
-
-        const seen = new Set();
-        const combined = [];
-        let invalidCount = 0;
-        successful.forEach((result) => {
-            invalidCount += result.value.invalidCount;
-            result.value.items.forEach((activity) => {
-                const key = `${activity.team}:${activity.id}`;
-                if (seen.has(key)) invalidCount += 1;
-                else {
-                    seen.add(key);
-                    combined.push(activity);
-                }
-            });
-        });
-        combined.sort((a, b) => (
-            b.sortDate.localeCompare(a.sortDate)
-            || b.order - a.order
-            || a.title.localeCompare(b.title, 'ko')
+        state.activities = store.sortActivities([...state.sourceItems.values()].flat());
+        const visible = state.activities.filter((activity) => (
+            (state.team === 'all' || activity.team === state.team)
+            && (state.year === 'all' || activity.date.slice(0, 4) === state.year)
         ));
+        const focused = document.activeElement?.closest?.('.activity-card');
+        const focusedId = focused?.id;
+        const focusedShare = document.activeElement?.classList?.contains('activity-share-link');
+        const fragment = document.createDocumentFragment();
+        visible.forEach((activity) => fragment.append(createCard(activity)));
+        ui.grid.replaceChildren(fragment);
+        syncFilterControls();
+        renderStatus(visible.length);
+        if (focusedId) {
+            const replacement = document.getElementById(focusedId);
+            const focusTarget = focusedShare ? replacement?.querySelector('.activity-share-link') : replacement;
+            focusTarget?.focus({ preventScroll: true });
+        }
+        focusLinkedActivity();
+    }
 
-        state.activities = combined;
-        populateYears();
-        ui.total.textContent = String(combined.length);
-        ui.warning.hidden = successful.length === SOURCES.length && invalidCount === 0;
-        setLoading(false);
+    async function loadSource(source) {
+        if (state.pending.has(source.team)) return;
+        state.pending.add(source.team);
+        state.failures.delete(source.team);
         render();
+        try {
+            const result = await store.loadActivitiesDetailed(source.url, source.team);
+            if (result.activities.length === 0 && result.invalidCount > 0) throw new Error('유효한 활동 기록이 없습니다.');
+            state.sourceItems.set(source.team, result.activities.map((activity) => ({ ...activity, team: source.team })));
+            state.invalidCounts.set(source.team, result.invalidCount);
+        } catch (error) {
+            console.warn(`[활동 기록] ${source.team} 갱신에 실패했습니다.`, error);
+            state.failures.add(source.team);
+        } finally {
+            state.pending.delete(source.team);
+            render();
+        }
+    }
+
+    function retryFailedSources() {
+        SOURCES.filter((source) => state.failures.has(source.team)).forEach(loadSource);
     }
 
     ui.teamButtons.forEach((button) => {
@@ -306,7 +251,6 @@
             const team = button.dataset.teamFilter;
             if (team !== 'all' && !TEAMS[team]) return;
             state.team = team;
-            syncFilterControls();
             syncFilterUrl();
             render();
         });
@@ -316,11 +260,17 @@
         syncFilterUrl();
         render();
     });
-    ui.retry.addEventListener('click', loadActivities);
+    ui.retry.addEventListener('click', retryFailedSources);
+    window.addEventListener('popstate', () => {
+        readFilters();
+        state.focusedHash = '';
+        render();
+    });
+    window.addEventListener('hashchange', focusLinkedActivity);
     document.querySelectorAll('[data-current-year]').forEach((element) => {
         element.textContent = String(new Date().getFullYear());
     });
-    readInitialFilters();
-    syncFilterControls();
-    loadActivities();
+    readFilters();
+    render();
+    SOURCES.forEach(loadSource);
 }());

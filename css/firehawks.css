@@ -446,8 +446,8 @@ img {
 
 .record-body time {
     color: var(--accent-soft);
-    font-family: "Orbitron", sans-serif;
-    font-size: 0.76rem;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
     font-weight: 800;
     letter-spacing: 0.08em;
 }
@@ -484,7 +484,7 @@ img {
 
 .story-image img {
     width: 100%;
-    min-height: 510px;
+    height: auto;
     object-fit: cover;
 }
 
@@ -796,9 +796,6 @@ img {
         grid-template-columns: 1fr;
     }
 
-    .story-image img {
-        min-height: 420px;
-    }
 }
 
 @media (max-width: 680px) {
@@ -880,9 +877,6 @@ img {
         padding: 23px 22px 26px;
     }
 
-    .story-image img {
-        min-height: 330px;
-    }
 
     .story-points li {
         grid-template-columns: 1fr;

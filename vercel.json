@@ -2,6 +2,30 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/admin",
+      "missing": [
+        {
+          "type": "host",
+          "value": "^(?:www\\.stayup-ai\\.com|localhost(?::\\d+)?|127\\.0\\.0\\.1(?::\\d+)?|\\[::1\\](?::\\d+)?)$"
+        }
+      ],
+      "destination": "https://www.stayup-ai.com/admin/",
+      "permanent": false
+    },
+    {
+      "source": "/admin/:path(.*)",
+      "missing": [
+        {
+          "type": "host",
+          "value": "^(?:www\\.stayup-ai\\.com|localhost(?::\\d+)?|127\\.0\\.0\\.1(?::\\d+)?|\\[::1\\](?::\\d+)?)$"
+        }
+      ],
+      "destination": "https://www.stayup-ai.com/admin/:path",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

@@ -127,7 +127,7 @@
         });
     }
 
-    function validatePayload(payload, expectedTeam) {
+    function validatePayloadDetailed(payload, expectedTeam) {
         if (!isPlainObject(payload) || payload.team !== expectedTeam || !Array.isArray(payload.activities)) {
             throw new TypeError('활동 데이터의 최상위 형식이 올바르지 않습니다.');
         }
@@ -135,11 +135,14 @@
         const activities = [];
         let invalidCount = 0;
         let unpublishedCount = 0;
+        const ids = new Set();
 
         payload.activities.forEach((rawActivity, index) => {
             try {
                 const activity = validateActivity(rawActivity);
                 if (activity) {
+                    if (ids.has(activity.id)) throw new TypeError('활동 ID가 중복되었습니다.');
+                    ids.add(activity.id);
                     activities.push(activity);
                 } else {
                     unpublishedCount += 1;
@@ -150,25 +153,51 @@
             }
         });
 
-        if (payload.activities.length > 0 && activities.length === 0 && invalidCount > 0 && unpublishedCount === 0) {
+        return { activities: sortActivities(activities), invalidCount, unpublishedCount };
+    }
+
+    function validatePayload(payload, expectedTeam) {
+        const result = validatePayloadDetailed(payload, expectedTeam);
+        if (result.activities.length === 0 && result.invalidCount > 0 && result.unpublishedCount === 0) {
             throw new TypeError('게시 가능한 활동 데이터가 모두 유효하지 않습니다.');
         }
+        return result.activities;
+    }
 
-        return sortActivities(activities);
+    async function fetchJson(url, { timeoutMs = 8000 } = {}) {
+        const controller = new AbortController();
+        let timeoutId;
+        const timeout = new Promise((resolve, reject) => {
+            timeoutId = windowObject.setTimeout(() => {
+                const error = new Error('데이터 요청 시간이 초과되었습니다.');
+                error.name = 'TimeoutError';
+                reject(error);
+                controller.abort();
+            }, timeoutMs);
+        });
+        try {
+            return await Promise.race([
+                fetch(url, {
+                    cache: 'no-cache',
+                    headers: { Accept: 'application/json' },
+                    signal: controller.signal
+                }).then(async (response) => {
+                    if (!response.ok) throw new Error(`데이터를 불러오지 못했습니다. (${response.status})`);
+                    return response.json();
+                }),
+                timeout
+            ]);
+        } finally {
+            windowObject.clearTimeout(timeoutId);
+        }
+    }
+
+    async function loadActivitiesDetailed(url, expectedTeam) {
+        return validatePayloadDetailed(await fetchJson(url), expectedTeam);
     }
 
     async function loadActivities(url, expectedTeam) {
-        const response = await fetch(url, {
-            cache: 'no-cache',
-            headers: { Accept: 'application/json' }
-        });
-
-        if (!response.ok) {
-            throw new Error(`활동 데이터를 불러오지 못했습니다. (${response.status})`);
-        }
-
-        const payload = await response.json();
-        return validatePayload(payload, expectedTeam);
+        return validatePayload(await fetchJson(url), expectedTeam);
     }
 
     function formatDate(date) {
@@ -185,11 +214,48 @@
         return `${formatDate(activity.date)} — ${formatDate(activity.endDate)}`;
     }
 
+    function getArchiveHref(activity) {
+        return `/activities/?team=${activity.team}&year=${activity.date.slice(0, 4)}#activity-${activity.team}-${activity.id}`;
+    }
+
+    function readRenderedActivities(container, defaultTeam = '') {
+        return Array.from(container.querySelectorAll('article[data-activity-id]')).flatMap((element) => {
+            const team = element.dataset.team || defaultTeam;
+            const date = element.dataset.date || element.querySelector('time')?.getAttribute('datetime');
+            const image = element.querySelector('img');
+            if (!['stayup', 'firehawks'].includes(team) || !date || !image) return [];
+            return [{
+                id: element.dataset.activityId,
+                team,
+                date,
+                endDate: element.dataset.endDate || '',
+                displayDate: element.querySelector('time')?.textContent || '',
+                category: element.querySelector('.latest-activity-category, .category-label, .activity-type')?.textContent || '활동 기록',
+                title: element.querySelector('h3')?.textContent || '',
+                description: (element.querySelector('.latest-activity-description, .activity-description, .record-body > p')
+                    || element.querySelector('.activity-content > p'))?.textContent || '',
+                image: image.getAttribute('src'),
+                imageAlt: image.alt,
+                imageWidth: image.width,
+                imageHeight: image.height,
+                order: Number(element.dataset.order) || 0,
+                published: true,
+                staticElement: element
+            }];
+        });
+    }
+
     windowObject.ActivityDataStore = Object.freeze({
         formatDate,
+        fetchJson,
+        getArchiveHref,
         getDateLabel,
         loadActivities,
+        loadActivitiesDetailed,
+        parseDate,
+        readRenderedActivities,
         sortActivities,
-        validatePayload
+        validatePayload,
+        validatePayloadDetailed
     });
 }(window));

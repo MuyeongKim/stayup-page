@@ -1,0 +1,77 @@
+/* Shared public controls. Each team keeps its own page palette. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.activity-retry-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: 8px 0 0 12px;
+    padding: 8px 14px;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    font-size: .875rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+.activity-retry-button:disabled { cursor: wait; opacity: .65; }
+.activity-share-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 12px;
+    color: var(--activity-link, #0959aa);
+    font-size: .875rem;
+    font-weight: 700;
+    text-underline-offset: 4px;
+}
+.activity-card:target,
+.activity-card.is-targeted {
+    outline: 3px solid var(--blue-600, #1269c7);
+    outline-offset: 4px;
+}
+html:not(.has-archive-js) .filter-panel { display: none; }
+
+@media (max-width: 920px) {
+    html:not(.has-navigation-js) .site-header:has(.nav-menu) { position: static; }
+    html:not(.has-navigation-js) .site-header:has(.nav-menu) ~ main .hero { margin-top: 0; }
+    html:not(.has-navigation-js) .mobile-menu-btn { display: none; }
+    html:not(.has-navigation-js) :is(.header-content, .header-inner):has(.nav-menu) {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-block: 12px;
+    }
+    html:not(.has-navigation-js) nav:has(.nav-menu) { width: 100%; }
+    html:not(.has-navigation-js) .nav-menu {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: none;
+    }
+    html:not(.has-navigation-js) .nav-menu a {
+        justify-content: center;
+        padding: 10px 4px;
+        font-size: .75rem;
+        text-align: center;
+    }
+}

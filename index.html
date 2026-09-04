@@ -31,7 +31,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700&amp;display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=2026090201">
+    <link rel="stylesheet" href="css/style.css?v=2026090501">
+    <link rel="stylesheet" href="/css/shared.css?v=2026090501">
 </head>
 
 <body>
@@ -48,10 +49,10 @@
             </a>
 
             <nav class="site-nav" aria-label="주요 메뉴">
+                <a href="/" aria-current="page">포털 홈</a>
                 <a href="/stayup/stayup-landing.html">Stay-Up</a>
                 <a href="/firehawks/firehawks-landing.html">FireHawks</a>
-                <a href="/activities/">활동 기록</a>
-                <a href="#projects">프로젝트</a>
+                <a href="/activities/">전체 활동</a>
             </nav>
         </div>
     </header>
@@ -148,7 +149,7 @@
                     <p class="activity-load-status" role="status">최근 활동을 불러오는 중입니다.</p>
                 </div>
                 <noscript>
-                    <p class="activity-noscript">최근 활동을 보려면 JavaScript를 활성화하거나 <a href="/activities/">전체 활동 기록</a>을 확인해 주세요.</p>
+                    <p class="activity-noscript">마지막 배포 시점의 최근 활동입니다. <a href="/activities/">전체 활동 기록 보기</a></p>
                 </noscript>
             </div>
         </section>
@@ -157,30 +158,30 @@
             <div class="section-inner">
                 <div class="section-heading projects-heading">
                     <div>
-                        <p class="section-kicker">ACTIVE SERVICES</p>
-                        <h2 id="projects-title">지금 바로 확인할 수 있는 기술</h2>
+                        <p class="section-kicker">TOOLS &amp; SERVICES</p>
+                        <h2 id="projects-title">현장 경험에서 이어지는 기술</h2>
                     </div>
                     <p>
-                        외부 공개 체험으로 연결되는 운영 중 서비스입니다.
-                        준비 중이거나 연결을 점검하는 기능은 아래 로드맵에서 별도로 안내합니다.
+                        공개 프로그램의 기능과 설치 방법을 확인하세요.
+                        준비 중인 도구는 아래 개발 로드맵에서 안내합니다.
                     </p>
                 </div>
 
-                <div class="service-grid" aria-label="운영 중인 서비스">
+                <div class="service-grid" aria-label="공개 프로그램">
                     <a class="service-card service-card-ai" href="https://ai-page-ruddy.vercel.app/" target="_blank"
-                        rel="noopener noreferrer" aria-label="AI 객체탐지 프로그램 실행, 새 창">
+                        rel="noopener noreferrer" aria-label="AI 객체탐지 프로그램 소개 및 다운로드, 새 창">
                         <div class="service-topline">
                             <span class="service-index" aria-hidden="true">01 / AI VISION</span>
-                            <span class="project-status status-live">공개 체험 · 외부</span>
+                            <span class="project-status status-live">Windows 배포본 제공</span>
                         </div>
                         <div class="service-copy">
                             <span class="service-icon" aria-hidden="true">AI</span>
                             <div>
                                 <h3>AI 객체탐지</h3>
-                                <p>이미지와 영상 속 객체를 식별하는 AI 비전 기능을 웹에서 직접 체험할 수 있습니다.</p>
+                                <p>사진·영상의 사람과 차량 후보를 확인하는 로컬 PC용 도구입니다. 소개 페이지에서 기능과 설치 방법, Windows 배포본을 확인하세요.</p>
                             </div>
                         </div>
-                        <span class="service-link">외부 프로그램 실행 <span aria-hidden="true">↗</span></span>
+                        <span class="service-link">프로그램 소개·다운로드 <span aria-hidden="true">↗</span></span>
                     </a>
 
                 </div>
@@ -265,9 +266,9 @@
         </div>
     </footer>
 
-    <script src="js/activity-data.js?v=2026090201"></script>
-    <script type="module" src="js/home-activity-helpers.js?v=2026090201"></script>
-    <script type="module" src="js/main.js?v=2026090201"></script>
+    <script src="js/activity-data.js?v=2026090501"></script>
+    <script type="module" src="js/home-activity-helpers.js?v=2026090501"></script>
+    <script type="module" src="js/main.js?v=2026090501"></script>
 </body>
 
 </html>

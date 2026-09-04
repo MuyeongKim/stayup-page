@@ -170,6 +170,7 @@
         ></div>
 
         <fieldset id="editor-fields" class="editor-fields">
+          <section id="activity-conflict" class="editor-conflict" aria-label="다른 관리자의 변경 확인" tabindex="-1" hidden></section>
           <input id="activity-team" name="team" type="hidden" />
           <input id="activity-id" name="id" type="hidden" />
 
@@ -322,7 +323,7 @@
             취소
           </button>
           <button id="save-button" class="button button--primary" type="submit">
-            저장하고 게시
+            저장하고 공개
           </button>
         </footer>
       </form>
@@ -361,6 +362,7 @@
         ></div>
 
         <fieldset id="schedule-editor-fields" class="editor-fields">
+          <section id="schedule-conflict" class="editor-conflict" aria-label="다른 관리자의 변경 확인" tabindex="-1" hidden></section>
           <input id="schedule-id" name="id" type="hidden" />
 
           <div class="field-grid field-grid--two">
@@ -452,7 +454,7 @@
             취소
           </button>
           <button id="save-schedule-button" class="button button--primary" type="submit">
-            저장하고 게시
+            저장하고 공개
           </button>
         </footer>
       </form>

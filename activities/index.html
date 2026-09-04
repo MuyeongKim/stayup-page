@@ -29,7 +29,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700;800&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/activities.css">
+    <link rel="stylesheet" href="/css/activities.css?v=2026090501">
+    <link rel="stylesheet" href="/css/shared.css?v=2026090501">
 </head>
 
 <body>
@@ -59,30 +60,19 @@
             <div class="shell hero-grid">
                 <div class="hero-copy">
                     <p class="eyebrow">ACTIVITY ARCHIVE</p>
-                    <h1 id="page-title">두 팀이 쌓아온 <br>모든 활동의 기록</h1>
-                    <p>재난 현장의 드론 운용과 훈련, 경기장에서 이어진 도전까지 Stay-Up과 FireHawks의 발자취를 모았습니다.</p>
+                    <h1 id="page-title">전체 활동 기록</h1>
+                    <p>Stay-Up의 현장 활동과 FireHawks의 대회 기록을 팀·연도별로 찾아보세요.</p>
                 </div>
                 <aside class="hero-summary" aria-label="활동 기록 안내">
-                    <span class="summary-label">ARCHIVE INDEX</span>
                     <strong id="total-activity-count" aria-live="polite">—</strong>
                     <span>공개 활동 기록</span>
-                    <div class="summary-teams" aria-hidden="true">
-                        <span>Stay-Up</span>
-                        <span>FireHawks</span>
-                    </div>
                 </aside>
             </div>
         </section>
 
         <section class="archive-section" aria-labelledby="archive-title">
             <div class="shell">
-                <div class="archive-heading">
-                    <div>
-                        <p class="section-kicker">FIELD &amp; COMPETITION</p>
-                        <h2 id="archive-title">활동 기록 찾아보기</h2>
-                    </div>
-                    <p>팀과 연도를 선택해 원하는 기록을 빠르게 확인할 수 있습니다.</p>
-                </div>
+                <h2 id="archive-title" class="visually-hidden">활동 기록 찾아보기</h2>
 
                 <div class="filter-panel" aria-label="활동 기록 필터">
                     <fieldset class="team-filter">
@@ -107,14 +97,14 @@
                     <span aria-hidden="true">NEWEST FIRST</span>
                 </div>
 
-                <div id="loading-state" class="state-panel loading-panel" role="status">
+                <div id="loading-state" class="state-panel loading-panel" role="status" hidden>
                     <span class="loading-indicator" aria-hidden="true"></span>
                     <p>활동 기록을 불러오는 중입니다.</p>
                 </div>
 
                 <div id="error-state" class="state-panel error-panel" role="alert" hidden>
                     <strong>활동 기록을 불러오지 못했습니다.</strong>
-                    <p>잠시 후 다시 시도해 주세요. 팀 소개 페이지의 기존 활동은 계속 확인할 수 있습니다.</p>
+                    <p>연결 상태를 확인한 뒤 다시 불러와 주세요. 이미 표시된 기록은 계속 읽을 수 있습니다.</p>
                     <button id="retry-button" type="button">다시 불러오기</button>
                 </div>
 
@@ -129,8 +119,8 @@
 
                 <noscript>
                     <div class="state-panel noscript-panel">
-                        <strong>활동 기록을 보려면 JavaScript가 필요합니다.</strong>
-                        <p><a href="/stayup/stayup-landing.html#activities">Stay-Up 활동</a> 또는 <a href="/firehawks/firehawks-landing.html#records">FireHawks 기록</a>을 확인해 주세요.</p>
+                        <strong>마지막 배포 시점의 전체 기록을 표시합니다.</strong>
+                        <p>팀·연도 필터를 사용하려면 JavaScript를 활성화해 주세요. 각 기록의 바로가기 주소는 그대로 사용할 수 있습니다.</p>
                     </div>
                 </noscript>
             </div>
@@ -147,11 +137,13 @@
                 <a href="/">포털 홈</a>
                 <a href="/stayup/stayup-landing.html">Stay-Up</a>
                 <a href="/firehawks/firehawks-landing.html">FireHawks</a>
+                <a href="/#projects">기술 서비스</a>
             </nav>
             <p class="copyright">© <span data-current-year>2026</span> 전북소방드론팀 Stay-Up.</p>
         </div>
     </footer>
 
-    <script src="/js/activities.js"></script>
+    <script src="/js/activity-data.js?v=2026090501"></script>
+    <script src="/js/activities.js?v=2026090501"></script>
 </body>
 </html>

@@ -24,11 +24,11 @@ Vercel의 `stayup-page` 프로젝트에서 **Settings → Environment Variables*
 | `GITHUB_OAUTH_CLIENT_SECRET` | GitHub OAuth App의 Client secret |
 | `GITHUB_OAUTH_CALLBACK_URL` | `https://www.stayup-ai.com/api/callback` |
 | `OAUTH_STATE_SECRET` | `openssl rand -hex 32`로 생성한 임의 값 |
-| `OAUTH_ALLOWED_ORIGINS` | `https://stayup-ai.com,https://www.stayup-ai.com,https://stayup-page.vercel.app` |
+| `OAUTH_ALLOWED_ORIGINS` | `https://www.stayup-ai.com` |
 | `GITHUB_OAUTH_SCOPE` | `public_repo` |
 | `GITHUB_OAUTH_REPOSITORY` | `MuyeongKim/stayup-page` |
 
-운영 환경에는 반드시 등록하고 새 배포를 실행합니다. 동적으로 생성된 Vercel Preview 주소에서 관리 화면 로그인을 시험하려면 그 주소의 exact origin(경로 없는 `https://...vercel.app`)을 `OAUTH_ALLOWED_ORIGINS`에 쉼표로 추가하고 Preview 환경에도 같은 비밀값을 설정합니다. 보안을 위해 `*.vercel.app` 와일드카드는 사용하지 않습니다.
+운영 환경에는 반드시 등록하고 새 배포를 실행합니다. 관리 화면과 GitHub 로그인은 `https://www.stayup-ai.com/admin/`에서 사용합니다. Vercel 기본 주소나 Preview 주소의 `/admin` 및 하위 경로는 운영 관리 주소로 이동하며, 공개 페이지의 Preview 탐색은 유지됩니다. OAuth 인증 쿠키는 발급한 호스트에서만 전송되므로 Preview origin을 허용 목록에 추가하는 것만으로 운영 콜백을 사용하는 로그인을 시험할 수 없습니다. 관리 기능의 변경은 로컬 모의 응답 테스트로 검증하고, 실제 GitHub 인증은 배포 후 운영 주소에서 확인합니다. 보안을 위해 `*.vercel.app` 와일드카드는 사용하지 않습니다.
 
 ## 3. Vercel 보안 헤더
 

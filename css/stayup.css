@@ -665,7 +665,7 @@ dd {
     border-radius: 6px;
     color: var(--white);
     background: rgba(7, 29, 53, 0.9);
-    font-size: 0.78rem;
+    font-size: 0.8125rem;
     font-weight: 700;
 }
 
@@ -678,8 +678,8 @@ dd {
 .activity-content time,
 .activity-content time + span {
     color: var(--blue-700);
-    font-family: "Orbitron", sans-serif;
-    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
     font-weight: 800;
     letter-spacing: 0.03em;
 }
