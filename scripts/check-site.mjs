@@ -88,7 +88,7 @@ async function checkHtml(filePath) {
     assert(/class="service-grid"/.test(html), 'index.html must separate available services from the roadmap.');
     assert((html.match(/class="service-card/g) || []).length === 2,
       'index.html must expose the two verified public tools.');
-    assert(/class="service-card service-card-dashboard" href="\/dashboard\/"/.test(html),
+    assert(/class="tool-link" href="\/dashboard\/"/.test(html),
       'index.html must link the field dashboard card to its introduction page.');
     assert(!html.includes('https://www.stayup-ai.com/rfid-read'),
       'index.html must not link to the unavailable RFID route.');

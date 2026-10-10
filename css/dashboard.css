@@ -345,6 +345,19 @@ code {
     font-weight: 600;
 }
 
+.map-credit {
+    flex-basis: 100%;
+}
+
+.screen-figure figcaption .map-credit a {
+    min-height: 28px;
+    font-weight: 400;
+}
+
+.map-example-note {
+    max-width: 74em;
+}
+
 .screen-figure figcaption a {
     display: inline-flex;
     align-items: center;

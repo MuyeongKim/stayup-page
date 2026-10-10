@@ -1,0 +1,6 @@
+Map data © OpenStreetMap contributors
+License: Open Database License (ODbL)
+https://www.openstreetmap.org/copyright
+Map source: https://www.openstreetmap.org/#map=15/35.88990/127.21571
+Exported via Share > PNG on 2026-10-10.
+Pins, mission and search areas in application screenshots are demonstration data.

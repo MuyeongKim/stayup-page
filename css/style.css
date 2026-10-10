@@ -759,6 +759,27 @@ a {
     box-shadow: 0 26px 58px rgba(8, 35, 63, 0.14);
 }
 
+.tool-link {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+}
+
+.tool-attribution {
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.tool-attribution a {
+    display: inline-block;
+    padding-block: 4px;
+    text-underline-offset: 3px;
+}
+
 .service-card-dashboard {
     border-top: 3px solid var(--orange-600);
 }
