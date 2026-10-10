@@ -1,4 +1,4 @@
-import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026101001';
+import { createActivityViewModel, selectLatestActivities } from './home-activity-helpers.js?v=2026101002';
 
 /**
  * Entry page enhancements.

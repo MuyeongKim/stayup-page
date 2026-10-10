@@ -767,11 +767,6 @@ a {
     background: linear-gradient(135deg, transparent, #fff0e4);
 }
 
-.service-card-dashboard .service-icon {
-    background: #fff0e4;
-    color: #8a3500;
-}
-
 .service-topline {
     display: flex;
     align-items: center;
@@ -788,25 +783,37 @@ a {
 .service-copy {
     margin-top: 30px;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 22px;
+    grid-template-columns: clamp(112px, 11vw, 156px) minmax(0, 1fr);
+    gap: 10px 20px;
     align-items: start;
 }
 
-.service-icon {
-    min-width: 58px;
-    height: 58px;
-    padding: 0 10px;
-    display: inline-grid;
-    place-items: center;
+.service-preview {
+    grid-row: 1 / span 2;
+    width: 100%;
+    margin: 0;
     justify-self: start;
-    border-radius: 15px;
-    background: var(--navy-900);
-    color: #ffffff;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+}
+
+.service-preview img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #f3f5f7;
+}
+
+.service-card-dashboard .service-preview img {
+    background: #0d1c2b;
+}
+
+.service-preview figcaption {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    line-height: 1.5;
 }
 
 .service-copy h3 {
@@ -820,7 +827,7 @@ a {
 
 .service-copy p {
     max-width: 440px;
-    margin: 10px 0 0;
+    margin: 0;
     color: var(--muted);
     font-size: 1rem;
     line-height: 1.75;
@@ -1304,9 +1311,21 @@ a {
     }
 
     .service-copy {
-        margin-top: 34px;
-        grid-template-columns: 1fr;
+        margin-top: 26px;
+        grid-template-columns: 112px minmax(0, 1fr);
         gap: 16px;
+    }
+
+    .service-preview {
+        grid-row: 1;
+    }
+
+    .service-copy h3 {
+        align-self: center;
+    }
+
+    .service-copy p {
+        grid-column: 1 / -1;
     }
 
     .roadmap-list {

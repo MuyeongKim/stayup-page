@@ -131,8 +131,6 @@ async function checkHtml(filePath) {
 
 async function checkMainStyles() {
   const css = await readFile(path.join(rootDir, 'css', 'style.css'), 'utf8');
-  assert(/\.service-icon\s*\{[^}]*justify-self:\s*start;/s.test(css),
-    'Mobile service icons must preserve their compact width instead of stretching.');
   assert(!/scroll-margin-top\s*:/.test(css),
     'Section anchors must not add scroll margin on top of the document scroll padding.');
   assert(/:focus-visible\s*\{[^}]*outline:\s*3px solid #ffffff;[^}]*box-shadow:\s*0 0 0 6px #8a3500;/s.test(css),
