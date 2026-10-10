@@ -1,3 +1,8 @@
+/* Typography is hosted with the site; font-display: swap keeps text available. */
+:root { --font-body: "Pretendard Variable", -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font-family: inherit; }
+
 /* Shared public controls. Each team keeps its own page palette. */
 .visually-hidden {
     position: absolute;

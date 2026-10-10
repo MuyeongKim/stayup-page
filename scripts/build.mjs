@@ -32,6 +32,7 @@ const staticEntries = [
   'stayup',
   'firehawks',
   'activities',
+  'dashboard',
   'admin'
 ];
 

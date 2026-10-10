@@ -59,6 +59,38 @@ async function checkBuiltHtml(filePath) {
   }
 }
 
+async function checkBundledFonts() {
+  const stylesheetPath = path.join(distDir, 'css', 'fonts', 'pretendard.css');
+  const publicPages = ['index.html', 'stayup/stayup-landing.html', 'firehawks/firehawks-landing.html', 'activities/index.html', 'dashboard/index.html'];
+  for (const page of publicPages) {
+    const htmlPath = path.join(distDir, page);
+    const html = await readFile(htmlPath, 'utf8');
+    const stylesheets = [...html.matchAll(/<link\b[^>]*>/gi)]
+      .map(match => match[0])
+      .filter(tag => /\brel=["']stylesheet["']/i.test(tag))
+      .map(tag => tag.match(/\bhref=["']([^"']+)["']/i)?.[1])
+      .filter(href => href && !/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(href));
+    const stylesheetPaths = await Promise.all(stylesheets.map(href => resolveReference(htmlPath, href)));
+    assert(stylesheetPaths.includes(stylesheetPath), `${page} must load the bundled Pretendard stylesheet.`);
+  }
+
+  const stylesheet = await readFile(stylesheetPath, 'utf8');
+  const fontReferences = [...new Set([...stylesheet.matchAll(/url\(\s*["']?([^\s"')]+)["']?\s*\)/gi)].map(match => match[1]))];
+  assert(fontReferences.length > 0, 'The bundled Pretendard stylesheet must reference font files.');
+  for (const reference of fontReferences) {
+    assert(!/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(reference), `Pretendard must use a local font file: ${reference}`);
+    const fontPath = await resolveReference(stylesheetPath, reference);
+    assert(fontPath.startsWith(`${distDir}${path.sep}`), `Font reference leaves the build output: ${reference}`);
+    assert(await exists(fontPath), `Pretendard references a missing built font: ${reference}`);
+    const font = await readFile(fontPath);
+    assert(font.length >= 48 && font.toString('ascii', 0, 4) === 'wOF2', `Pretendard references an invalid WOFF2 file: ${reference}`);
+  }
+
+  const licensePath = path.join(distDir, 'css', 'fonts', 'OFL-Pretendard.txt');
+  assert(await exists(licensePath), 'The bundled Pretendard license must be included in the build output.');
+  assert((await readFile(licensePath, 'utf8')).trim().length > 0, 'The bundled Pretendard license must not be empty.');
+}
+
 function staticCardKeys(html) {
   return [...html.matchAll(/<article\b([^>]*\bdata-activity-id="[^"]+"[^>]*)>/g)].map(match => {
     const attributes = match[1];
@@ -174,6 +206,7 @@ async function main() {
   checkStaticEscapingAndVisibility();
   const htmlFiles = await collectFiles(distDir, '.html');
   for (const htmlFile of htmlFiles) await checkBuiltHtml(htmlFile);
+  await checkBundledFonts();
 }
 
 main().catch((error) => {

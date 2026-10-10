@@ -56,6 +56,8 @@ function environment(url = 'https://example.test/activities/') {
             this.disabled = false;
             this.scrollCalls = 0;
             this.focusCalls = 0;
+            this.detachCount = 0;
+            this.emptiedCount = 0;
             this.classList = {
                 contains: (name) => this.className.split(/\s+/).includes(name),
                 add: (...names) => { this.className = [...new Set([...this.className.split(/\s+/).filter(Boolean), ...names])].join(' '); },
@@ -75,7 +77,30 @@ function environment(url = 'https://example.test/activities/') {
             });
         }
         replaceChildren(...children) { this.textContent = ''; this.append(...children); }
-        remove() { if (this.parentNode) { this.parentNode.children = this.parentNode.children.filter((child) => child !== this); this.parentNode = null; } }
+        insertBefore(child, reference) {
+            if (child === reference) return;
+            child.remove();
+            const index = reference ? this.children.indexOf(reference) : this.children.length;
+            this.children.splice(index, 0, child);
+            child.parentNode = this;
+        }
+        replaceWith(child) {
+            const parent = this.parentNode;
+            if (!parent || child === this) return;
+            child.remove();
+            parent.children.splice(parent.children.indexOf(this), 1, child);
+            child.parentNode = parent;
+            this.parentNode = null;
+            this.detachCount += 1;
+        }
+        get lastElementChild() { return this.children.at(-1) || null; }
+        remove() {
+            if (!this.parentNode) return;
+            if (this.parentNode.children.length === 1) this.parentNode.emptiedCount += 1;
+            this.parentNode.children = this.parentNode.children.filter((child) => child !== this);
+            this.parentNode = null;
+            this.detachCount += 1;
+        }
         setAttribute(name, value) {
             this.attributes[name] = String(value);
             if (name === 'tabindex') this.tabIndex = Number(value);
@@ -206,18 +231,23 @@ function staticCard(env, container, team, item, className = 'activity-card') {
 }
 
 {
+    const first = activity('stayup', 'first', '2026-06-20');
     const target = activity('stayup', 'linked');
     const env = environment('https://example.test/activities/?team=stayup&year=2026#activity-stayup-linked');
-    archive(env, [{ team: 'stayup', item: target }, { team: 'firehawks', item: activity('firehawks', 'old') }]);
+    archive(env, [{ team: 'stayup', item: first }, { team: 'stayup', item: target }, { team: 'firehawks', item: activity('firehawks', 'old') }]);
+    const grid = env.document.getElementById('activities-grid');
     const original = env.document.getElementById('activity-stayup-linked');
     assert.equal(original.scrollCalls, 1);
-    env.requests[0].resolve(response(payload('stayup', [target])));
+    assert.equal(original.detachCount, 0, '상태만 갱신할 때 두 번째 타겟 카드를 분리해 스크롤 기준을 잃으면 안 됩니다.');
+    env.requests[0].resolve(response(payload('stayup', [first, target])));
     await flush();
     const refreshed = env.document.getElementById('activity-stayup-linked');
     assert.equal(refreshed.scrollCalls, 0, '부분 갱신마다 딥링크로 스크롤을 빼앗으면 안 됩니다.');
     assert.equal(env.document.activeElement.id, refreshed.id);
+    assert.equal(grid.emptiedCount, 0, '정적 카드를 갱신할 때 그리드를 잠시 비워 문서 높이를 줄이면 안 됩니다.');
     env.requests[1].reject(new Error('network'));
     await flush();
+    assert.equal(refreshed.detachCount, 0, '다른 팀 요청 완료 시 유지되는 타겟은 연결 상태를 보존해야 합니다.');
     assert.match(env.document.getElementById('partial-warning').textContent, /기본 기록/);
     const firehawksButton = env.document.querySelectorAll('[data-team-filter]').find((button) => button.dataset.teamFilter === 'firehawks');
     firehawksButton.emit('click');
@@ -228,7 +258,7 @@ function staticCard(env, container, team, item, className = 'activity-card') {
     assert.equal(env.document.getElementById('activities-grid').querySelectorAll('article').length, 0, '정상 빈 목록 응답은 기존 정적 기록을 제거해야 합니다.');
     env.window.location = new URL('https://example.test/activities/?team=stayup&year=2026#activity-stayup-linked');
     env.window.emit('popstate');
-    assert.equal(env.document.getElementById('activities-grid').querySelectorAll('article').length, 1, '뒤로 가기로 필터와 선택 활동을 복원해야 합니다.');
+    assert.equal(env.document.getElementById('activities-grid').querySelectorAll('article').length, 2, '뒤로 가기로 필터와 선택 활동을 복원해야 합니다.');
 }
 
 {

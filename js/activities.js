@@ -210,9 +210,16 @@
         const focused = document.activeElement?.closest?.('.activity-card');
         const focusedId = focused?.id;
         const focusedShare = document.activeElement?.classList?.contains('activity-share-link');
-        const fragment = document.createDocumentFragment();
-        visible.forEach((activity) => fragment.append(createCard(activity)));
-        ui.grid.replaceChildren(fragment);
+        // Keep unchanged cards connected. Emptying the grid between refreshes
+        // can clamp the document scroll position even when focus is restored.
+        const cards = visible.map(createCard);
+        cards.forEach((card, index) => {
+            const current = ui.grid.children[index];
+            if (current === card) return;
+            if (current?.id === card.id) current.replaceWith(card);
+            else ui.grid.insertBefore(card, current || null);
+        });
+        while (ui.grid.children.length > cards.length) ui.grid.lastElementChild.remove();
         syncFilterControls();
         renderStatus(visible.length);
         if (focusedId) {

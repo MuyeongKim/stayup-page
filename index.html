@@ -29,10 +29,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Orbitron:wght@600;700&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&amp;display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css?v=2026090501">
-    <link rel="stylesheet" href="/css/shared.css?v=2026090501">
+    <link rel="stylesheet" href="/css/fonts/pretendard.css?v=1.3.9">
+    <link rel="stylesheet" href="css/style.css?v=2026101001">
+    <link rel="stylesheet" href="/css/shared.css?v=2026101001">
 </head>
 
 <body>
@@ -61,14 +62,14 @@
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-inner">
                 <div class="hero-copy">
-                    <p class="eyebrow">JEONBUK FIRE SERVICE · DRONE PORTAL</p>
+                    <p class="eyebrow">전북소방 드론 활동 통합 포털</p>
                     <h1 id="hero-title">하늘의 시야를,<br>현장의 판단으로.</h1>
                     <p class="hero-description">
-                        Stay-Up은 재난 현장을 더 넓게 보고, FireHawks는 정밀 조종과 팀워크를 더 깊게 익힙니다.
-                        서로 다른 두 현장에서 축적한 드론 운용 경험을 한곳에 기록합니다.
+                        재난 현장을 넓게 보는 Stay-Up, 정밀 조종과 팀워크를 키우는 FireHawks.
+                        전북소방 두 드론팀의 활동과 기술을 기록합니다.
                     </p>
                     <div class="hero-actions" aria-label="바로가기">
-                        <a class="hero-action hero-action-primary" href="/stayup/stayup-landing.html">재난 대응팀 보기</a>
+                        <a class="hero-action hero-action-primary" href="/stayup/stayup-landing.html">재난 대응팀 보기 <span aria-hidden="true">→</span></a>
                         <a class="hero-action hero-action-secondary" href="#latest-activities">최근 활동 보기</a>
                     </div>
                 </div>
@@ -81,7 +82,7 @@
                         <span class="hero-field-index" aria-hidden="true">FIELD / 01</span>
                     </div>
                     <figcaption>
-                        <span class="field-label">FIELD NOTE · SEARCH SUPPORT</span>
+                        <span class="field-label">현장 기록 · 수색 지원</span>
                         <strong>드론으로 먼저 확보한 수색 시야</strong>
                         <span>2025 부안군 내변산 실종자 수색</span>
                     </figcaption>
@@ -93,7 +94,7 @@
             <div class="section-inner">
                 <div class="section-heading">
                     <div>
-                        <p class="section-kicker">OUR TEAMS</p>
+                        <p class="section-kicker">두 팀, 서로 다른 현장</p>
                         <h2 id="teams-title">두 팀의 현장을 만나보세요</h2>
                     </div>
                     <p>
@@ -136,7 +137,7 @@
             <div class="section-inner">
                 <div class="section-heading latest-heading">
                     <div>
-                        <p class="section-kicker">LATEST FIELD LOG</p>
+                        <p class="section-kicker">최근 활동</p>
                         <h2 id="latest-title">지금 이어지고 있는 현장</h2>
                     </div>
                     <div class="section-heading-side">
@@ -158,67 +159,84 @@
             <div class="section-inner">
                 <div class="section-heading projects-heading">
                     <div>
-                        <p class="section-kicker">TOOLS &amp; SERVICES</p>
+                        <p class="section-kicker">공개 프로그램과 개발 소식</p>
                         <h2 id="projects-title">현장 경험에서 이어지는 기술</h2>
                     </div>
                     <p>
-                        공개 프로그램의 기능과 설치 방법을 확인하세요.
+                        공개 도구의 주요 기능과 사용 방법, 배포본을 확인하세요.
                         준비 중인 도구는 아래 개발 로드맵에서 안내합니다.
                     </p>
                 </div>
 
-                <div class="service-grid" aria-label="공개 프로그램">
-                    <a class="service-card service-card-ai" href="https://ai-page-ruddy.vercel.app/" target="_blank"
-                        rel="noopener noreferrer" aria-label="AI 객체탐지 프로그램 소개 및 다운로드, 새 창">
-                        <div class="service-topline">
-                            <span class="service-index" aria-hidden="true">01 / AI VISION</span>
-                            <span class="project-status status-live">Windows 배포본 제공</span>
-                        </div>
-                        <div class="service-copy">
-                            <span class="service-icon" aria-hidden="true">AI</span>
-                            <div>
-                                <h3>AI 객체탐지</h3>
-                                <p>사진·영상의 사람과 차량 후보를 확인하는 로컬 PC용 도구입니다. 소개 페이지에서 기능과 설치 방법, Windows 배포본을 확인하세요.</p>
+                <div class="project-layout">
+                    <div class="service-grid" aria-label="공개 프로그램">
+                        <a class="service-card service-card-dashboard" href="/dashboard/"
+                            aria-label="STAY UP 현장 상황판 소개 및 다운로드">
+                            <div class="service-topline">
+                                <span class="service-index" aria-hidden="true">FIELD DASHBOARD</span>
+                                <span class="project-status status-work">훈련·시연용</span>
                             </div>
-                        </div>
-                        <span class="service-link">프로그램 소개·다운로드 <span aria-hidden="true">↗</span></span>
-                    </a>
+                            <div class="service-copy">
+                                <span class="service-icon" aria-hidden="true">CP</span>
+                                <div>
+                                    <h3>STAY UP 현장 상황판</h3>
+                                    <p>드론·인원·수색구역과 활동기록을 한 화면에서 정리합니다. 노트북의 조작 패널과 별도 모니터의 표출 화면, 실행 방법을 확인하세요.</p>
+                                </div>
+                            </div>
+                            <span class="service-link">상황판 소개·다운로드 <span aria-hidden="true">→</span></span>
+                        </a>
+                        <a class="service-card service-card-ai" href="https://ai-page-ruddy.vercel.app/" target="_blank"
+                            rel="noopener noreferrer" aria-label="AI 객체탐지 프로그램 소개 및 다운로드, 새 창">
+                            <div class="service-topline">
+                                <span class="service-index" aria-hidden="true">AI VISION</span>
+                                <span class="project-status status-live">Windows 배포본 제공</span>
+                            </div>
+                            <div class="service-copy">
+                                <span class="service-icon" aria-hidden="true">AI</span>
+                                <div>
+                                    <h3>AI 객체탐지</h3>
+                                    <p>사진·영상의 사람과 차량 후보를 확인하는 로컬 PC용 도구입니다. 소개 페이지에서 기능과 설치 방법, Windows 배포본을 확인하세요.</p>
+                                </div>
+                            </div>
+                            <span class="service-link">프로그램 소개·다운로드 <span aria-hidden="true">↗</span></span>
+                        </a>
 
-                </div>
-
-                <aside class="project-roadmap" aria-labelledby="roadmap-title">
-                    <div class="roadmap-intro">
-                        <p class="section-kicker">IN DEVELOPMENT</p>
-                        <h3 id="roadmap-title">개발 로드맵</h3>
-                        <p>현장과 행정 업무의 반복을 줄이기 위한 다음 도구를 준비하고 있습니다.</p>
                     </div>
-                    <ol class="roadmap-list">
-                        <li>
-                            <span class="roadmap-code" aria-hidden="true">RFID</span>
-                            <div>
-                                <strong>소방장비 현황</strong>
-                                <span>배포 경로와 업무 접근 권한 점검</span>
-                            </div>
-                            <span class="project-status status-review">연결 점검</span>
-                        </li>
-                        <li>
-                            <span class="roadmap-code" aria-hidden="true">RAG</span>
-                            <div>
-                                <strong>소방업무 지식 챗봇</strong>
-                                <span>관련 규정과 매뉴얼 검색 지원</span>
-                            </div>
-                            <span class="project-status status-pending">준비 중</span>
-                        </li>
-                        <li>
-                            <span class="roadmap-code" aria-hidden="true">STT</span>
-                            <div>
-                                <strong>음성 기록 전사</strong>
-                                <span>현장 음성을 업무 기록으로 변환</span>
-                            </div>
-                            <span class="project-status status-pending">준비 중</span>
-                        </li>
-                    </ol>
-                </aside>
+
+                    <aside class="project-roadmap" aria-labelledby="roadmap-title">
+                        <div class="roadmap-intro">
+                            <p class="section-kicker">준비 중인 도구</p>
+                            <h3 id="roadmap-title">개발 로드맵</h3>
+                            <p>현장과 행정 업무의 반복을 줄이기 위한 다음 도구를 준비하고 있습니다.</p>
+                        </div>
+                        <ol class="roadmap-list">
+                            <li>
+                                <span class="roadmap-code" aria-hidden="true">RFID</span>
+                                <div>
+                                    <strong>소방장비 현황</strong>
+                                    <span>배포 경로와 업무 접근 권한 점검</span>
+                                </div>
+                                <span class="project-status status-review">연결 점검</span>
+                            </li>
+                            <li>
+                                <span class="roadmap-code" aria-hidden="true">RAG</span>
+                                <div>
+                                    <strong>소방업무 지식 챗봇</strong>
+                                    <span>관련 규정과 매뉴얼 검색 지원</span>
+                                </div>
+                                <span class="project-status status-pending">준비 중</span>
+                            </li>
+                            <li>
+                                <span class="roadmap-code" aria-hidden="true">STT</span>
+                                <div>
+                                    <strong>음성 기록 전사</strong>
+                                    <span>현장 음성을 업무 기록으로 변환</span>
+                                </div>
+                                <span class="project-status status-pending">준비 중</span>
+                            </li>
+                        </ol>
+                    </aside>
+                </div>
             </div>
         </section>
     </main>
@@ -238,6 +256,7 @@
                 <div>
                     <strong>Explore</strong>
                     <a href="/activities/">활동 기록</a>
+                    <a href="/dashboard/">현장 상황판</a>
                     <a href="#projects">기술 서비스</a>
                 </div>
             </nav>
@@ -266,9 +285,9 @@
         </div>
     </footer>
 
-    <script src="js/activity-data.js?v=2026090501"></script>
-    <script type="module" src="js/home-activity-helpers.js?v=2026090501"></script>
-    <script type="module" src="js/main.js?v=2026090501"></script>
+    <script src="js/activity-data.js?v=2026101001"></script>
+    <script type="module" src="js/home-activity-helpers.js?v=2026101001"></script>
+    <script type="module" src="js/main.js?v=2026101001"></script>
 </body>
 
 </html>

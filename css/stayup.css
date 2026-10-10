@@ -261,7 +261,7 @@ dd {
 .hero {
     position: relative;
     display: grid;
-    min-height: min(820px, calc(100svh - 78px));
+    min-height: 640px;
     overflow: hidden;
     color: var(--white);
     background: var(--navy-900);
@@ -293,11 +293,11 @@ dd {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-block: 96px 120px;
+    padding-block: 76px 104px;
 }
 
 .hero-content {
-    width: min(660px, 56%);
+    width: min(640px, 58%);
 }
 
 .eyebrow,
@@ -305,10 +305,9 @@ dd {
 .contact-label {
     margin-bottom: 16px;
     color: var(--blue-700);
-    font-family: "Orbitron", sans-serif;
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.16em;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
 }
 
 .hero .eyebrow {
@@ -327,19 +326,19 @@ dd {
 
 .hero h1 {
     max-width: 750px;
-    margin-bottom: 28px;
-    font-size: clamp(2.75rem, 5.1vw, 4.85rem);
+    margin-bottom: 24px;
+    font-size: clamp(2.1rem, 4.25vw, 4rem);
     font-weight: 800;
-    letter-spacing: -0.055em;
-    line-height: 1.13;
+    letter-spacing: -0.04em;
+    line-height: 1.18;
 }
 
 .hero-description {
-    max-width: 660px;
-    margin-bottom: 36px;
+    max-width: 34em;
+    margin-bottom: 28px;
     color: rgba(255, 255, 255, 0.88);
     font-size: clamp(1rem, 1.5vw, 1.16rem);
-    line-height: 1.85;
+    line-height: 1.75;
 }
 
 .hero-actions {
@@ -353,12 +352,17 @@ dd {
     align-items: center;
     justify-content: center;
     min-height: 52px;
+    gap: 16px;
     padding: 12px 24px;
     border: 1px solid transparent;
     border-radius: 8px;
     font-weight: 700;
     text-decoration: none;
-    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.button:active {
+    transform: translateY(1px);
 }
 
 .button-primary {
@@ -372,8 +376,8 @@ dd {
 
 .button-secondary {
     color: var(--white);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.62);
+    background: rgba(7, 29, 53, 0.22);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .button-secondary:hover {
@@ -406,14 +410,14 @@ dd {
     grid-template-columns: minmax(235px, 0.85fr) minmax(0, 2.15fr);
     overflow: hidden;
     border: 1px solid var(--line);
-    border-top: 5px solid var(--blue-600);
+    border-top: 3px solid var(--blue-600);
     border-radius: var(--radius-md);
     background: var(--white);
     box-shadow: var(--shadow-lg);
 }
 
 .evidence-heading {
-    padding: 34px 32px;
+    padding: 28px;
     border-right: 1px solid var(--line);
 }
 
@@ -440,8 +444,8 @@ dd {
     display: flex;
     flex-direction: column-reverse;
     justify-content: center;
-    min-height: 150px;
-    padding: 28px 22px;
+    min-height: 140px;
+    padding: 24px 22px;
     border-right: 1px solid var(--line);
 }
 
@@ -451,7 +455,7 @@ dd {
 
 .stat-item dt {
     color: var(--muted);
-    font-size: 0.82rem;
+    font-size: 0.875rem;
     font-weight: 600;
 }
 
@@ -460,13 +464,14 @@ dd {
     flex-wrap: wrap;
     align-items: baseline;
     gap: 5px;
-    margin-bottom: 4px;
+    margin: 0 0 4px;
     color: var(--navy-900);
 }
 
 .stat-item dd strong {
     font-family: "Orbitron", sans-serif;
     font-size: clamp(2rem, 3vw, 2.7rem);
+    font-variant-numeric: tabular-nums;
     line-height: 1;
 }
 
@@ -495,19 +500,18 @@ dd {
 
 /* Shared sections */
 .section {
-    padding: 112px 0;
-    scroll-margin-top: 88px;
+    padding: 88px 0;
 }
 
 .section-heading {
     max-width: 720px;
-    margin-bottom: 48px;
+    margin-bottom: 36px;
 }
 
 .section-heading h2 {
     margin-bottom: 14px;
     color: var(--navy-900);
-    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-size: clamp(1.85rem, 3.3vw, 2.75rem);
     font-weight: 800;
     letter-spacing: -0.045em;
     line-height: 1.22;
@@ -538,72 +542,81 @@ dd {
 
 /* Missions */
 .missions {
-    padding-top: 88px;
+    padding-top: 68px;
     background: var(--surface);
+}
+
+.missions-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+    gap: clamp(32px, 5vw, 72px);
+}
+
+.missions .section-heading {
+    margin-bottom: 0;
 }
 
 .mission-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--white);
+    overflow: hidden;
 }
 
 .mission-card {
-    position: relative;
-    min-height: 330px;
-    padding: 34px;
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    background: var(--white);
-    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 0 18px;
+    padding: 26px 28px;
+    border-bottom: 1px solid var(--line);
 }
 
-.mission-card::after {
-    content: "";
-    position: absolute;
-    right: -42px;
-    bottom: -72px;
-    width: 150px;
-    height: 150px;
-    border: 24px solid var(--blue-050);
-    border-radius: 50%;
+.mission-card:last-child {
+    border-bottom: 0;
 }
 
 .mission-number {
-    display: block;
-    margin-bottom: 54px;
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    padding-top: 4px;
     color: var(--blue-600);
     font-family: "Orbitron", sans-serif;
-    font-size: 0.82rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.mission-card h3,
+.mission-card p,
+.mission-tag {
+    grid-column: 2;
 }
 
 .mission-card h3 {
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     color: var(--navy-900);
-    font-size: 1.45rem;
+    font-size: 1.3rem;
     line-height: 1.35;
 }
 
 .mission-card p {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 24px;
+    margin-bottom: 14px;
     color: var(--muted);
+    line-height: 1.75;
 }
 
 .mission-tag {
-    position: relative;
-    z-index: 1;
     display: inline-flex;
-    padding: 6px 10px;
+    justify-self: start;
+    padding: 5px 9px;
     border-radius: 6px;
     color: var(--blue-700);
     background: var(--blue-050);
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.8125rem;
+    font-weight: 600;
 }
 
 /* Activities */
@@ -613,6 +626,8 @@ dd {
 
 .activities .section-link {
     display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     margin-left: 0.35rem;
     color: var(--blue-700);
     font-weight: 800;
@@ -627,7 +642,7 @@ dd {
 .activities-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    gap: 22px;
 }
 
 .activity-card {
@@ -636,9 +651,9 @@ dd {
     min-width: 0;
     overflow: hidden;
     border: 1px solid var(--line);
-    border-radius: var(--radius-md);
+    border-radius: 16px;
     background: var(--white);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 6px 20px rgba(7, 29, 53, 0.04);
     height: 100%;
 }
 
@@ -688,12 +703,13 @@ dd {
     margin: 12px 0;
     color: var(--navy-900);
     font-size: 1.35rem;
-    line-height: 1.4;
+    line-height: 1.45;
 }
 
 .activity-content p {
     margin-bottom: 0;
     color: var(--muted);
+    line-height: 1.75;
     white-space: pre-line;
 }
 
@@ -866,14 +882,13 @@ dd {
 .member-card span {
     display: block;
     color: var(--muted);
-    font-size: 0.72rem;
-    line-height: 1.35;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 /* Vision and contact */
 .vision-contact {
-    padding: 110px 0;
-    scroll-margin-top: 88px;
+    padding: 88px 0;
     color: var(--white);
     background:
         radial-gradient(circle at 15% 100%, rgba(35, 130, 223, 0.25), transparent 33%),
@@ -884,7 +899,7 @@ dd {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
     align-items: center;
-    gap: 80px;
+    gap: 64px;
 }
 
 .section-kicker-light {
@@ -893,7 +908,7 @@ dd {
 
 .vision-copy h2 {
     margin-bottom: 24px;
-    font-size: clamp(2.1rem, 4.2vw, 3.6rem);
+    font-size: clamp(1.85rem, 3.5vw, 3rem);
     font-weight: 800;
     letter-spacing: -0.05em;
     line-height: 1.25;
@@ -1090,7 +1105,7 @@ dd {
     }
 
     .hero {
-        min-height: 700px;
+        min-height: 600px;
     }
 
     .hero-content {
@@ -1104,20 +1119,14 @@ dd {
     }
 
     .section {
-        padding: 88px 0;
+        padding: 72px 0;
     }
 
-    .mission-grid {
+    .missions-layout {
         grid-template-columns: 1fr;
+        gap: 28px;
     }
 
-    .mission-card {
-        min-height: auto;
-    }
-
-    .mission-number {
-        margin-bottom: 32px;
-    }
 
     .leadership-grid,
     .vision-contact-grid {
@@ -1153,11 +1162,11 @@ dd {
     }
 
     .hero {
-        min-height: 660px;
+        min-height: 580px;
     }
 
     .hero-inner {
-        padding-block: 78px 112px;
+        padding-block: 60px 92px;
     }
 
     .hero-content {
@@ -1235,7 +1244,7 @@ dd {
     }
 
     .hero {
-        min-height: 650px;
+        min-height: 570px;
     }
 
     .hero-image {
@@ -1246,12 +1255,8 @@ dd {
         background: linear-gradient(180deg, rgba(4, 20, 36, 0.58) 0%, rgba(7, 29, 53, 0.78) 52%, rgba(4, 20, 36, 0.94) 100%);
     }
 
-    .hero h1 {
-        font-size: clamp(2.35rem, 11vw, 3.35rem);
-    }
-
     .hero-description {
-        font-size: 0.96rem;
+        font-size: 1rem;
     }
 
     .hero-actions {
@@ -1285,11 +1290,11 @@ dd {
     }
 
     .stat-item dd strong {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     .section {
-        padding: 74px 0;
+        padding: 60px 0;
     }
 
     .section-heading {
@@ -1297,10 +1302,15 @@ dd {
     }
 
     .section-heading h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
-    .mission-card,
+    .mission-card {
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 0 12px;
+        padding: 24px 20px;
+    }
+
     .activity-content,
     .contact-card {
         padding: 24px;
@@ -1322,7 +1332,7 @@ dd {
     }
 
     .leader-card div > p:last-child {
-        display: none;
+        font-size: 0.875rem;
     }
 
     .members-disclosure summary {
